@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.33906.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MineSweeperAuto", "MineSweeperAuto\MineSweeperAuto.csproj", "{BF61110E-D657-4A23-A463-A131A27CF1E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "Game\Game.csproj", "{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -33,6 +35,18 @@ Global
 		{BF61110E-D657-4A23-A463-A131A27CF1E3}.Release|x86.ActiveCfg = Release|x86
 		{BF61110E-D657-4A23-A463-A131A27CF1E3}.Release|x86.Build.0 = Release|x86
 		{BF61110E-D657-4A23-A463-A131A27CF1E3}.Release|x86.Deploy.0 = Release|x86
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|x64.Build.0 = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Debug|x86.Build.0 = Debug|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|ARM64.Build.0 = Release|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|x64.ActiveCfg = Release|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|x64.Build.0 = Release|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|x86.ActiveCfg = Release|Any CPU
+		{BADCD592-8567-41A6-9A3E-DD0DF5E5EBCE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
