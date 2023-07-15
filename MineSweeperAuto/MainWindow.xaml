@@ -23,5 +23,25 @@
             <Image Source="/Assets/WindowIcon.png" HorizontalAlignment="Left" Width="16" Height="16" Margin="8,0"/>
             <TextBlock Text="MineSweeper Auto" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="NoWrap" Margin="32, 0, 0, 0"/>
         </Grid>
+        <NavigationView Name="NavigationViewPageSelector" Grid.Row="1" IsBackButtonVisible="Collapsed">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="Play">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE768;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Game Options">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7FC;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Solver Options">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEF58;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <Frame Name="ContentFrame"/>
+        </NavigationView>
     </Grid>
 </winex:WindowEx>
