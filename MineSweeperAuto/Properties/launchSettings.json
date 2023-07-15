@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MineSweeperAuto (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MineSweeperAuto (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
