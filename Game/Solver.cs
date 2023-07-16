@@ -1,6 +1,6 @@
 ﻿namespace Game;
 
-public class Solver
+public class Solver : Player
 {
     
 }
