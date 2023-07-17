@@ -2,14 +2,48 @@
 
 namespace Game;
 
+/// <summary>
+/// Game container used for starting and organizing the game
+/// </summary>
 public class Session
 {
-    public Field PlayField;
-    public Player Actor = new Player();
-    public Solver AutoActor = new Solver();
+    /// <summary>
+    /// Field for the game
+    /// </summary>
+    public Field? PlayField;
+    /// <summary>
+    /// Player actions
+    /// </summary>
+    public Player? Actor;
+    /// <summary>
+    /// Solver for the game
+    /// </summary>
+    public Solver? AutoActor;
+    /// <summary>
+    /// Amount of mines generated for the game
+    /// </summary>
     public int MineCount { get; private set; }
+    
+    /// <summary>
+    /// Generates a session from a mine percentage
+    /// </summary>
+    /// <param name="width">Width of the field</param>
+    /// <param name="height">Height of the field</param>
+    /// <param name="percentage">How likely is the tile going to be a mine</param>
+    /// <param name="guaranteedSolution">Must be possible to solve without guessing</param>
+    /// <param name="startingPoint">Where to place the starter zone</param>
+    /// <returns>Session ready to play</returns>
+    /// <exception cref="ArgumentException">Percentage must be between 0 and 1, and starting point must be within the field</exception>
     public static Session GenerateFromPercentage(int width, int height, double percentage, bool guaranteedSolution, Point startingPoint)
     {
+        if (percentage < 0 || percentage > 1)
+        {
+            throw new ArgumentException("Percentage must be between 0 and 1");
+        }
+        if (startingPoint.X < 0 || startingPoint.X >= width || startingPoint.Y < 0 || startingPoint.Y >= height)
+        {
+            throw new ArgumentException("Starting point must be within the field");
+        }
         Session result = new Session
         {
             PlayField = new Field(width, height)
@@ -27,10 +61,30 @@ public class Session
         }
 
         result.MineCount = mineCount;
+        result.Actor = new Player(result.PlayField);
+        result.AutoActor = new Solver(result.PlayField);
         return result;
     }
+    /// <summary>
+    /// Generates a session from a mine count
+    /// </summary>
+    /// <param name="width">Width of the field</param>
+    /// <param name="height">Height of the field</param>
+    /// <param name="mineCount">How many mines have to be placed</param>
+    /// <param name="guaranteedSolution">Must be possible to solve without guessing</param>
+    /// <param name="startingPoint">Where to place the starter zone</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Mine count must be 0 or greater, and starting point must be within the field</exception>
     public static Session GenerateFromCount(int width, int height, int mineCount, bool guaranteedSolution, Point startingPoint)
     {
+        if (mineCount < 0)
+        {
+            throw new ArgumentException("Mine count must be 0 or greater");
+        }
+        if (startingPoint.X < 0 || startingPoint.X >= width || startingPoint.Y < 0 || startingPoint.Y >= height)
+        {
+            throw new ArgumentException("Starting point must be within the field");
+        }
         Session result = new Session
         {
             PlayField = new Field(width, height)
@@ -50,6 +104,8 @@ public class Session
         }
 
         result.MineCount = placed;
+        result.Actor = new Player(result.PlayField);
+        result.AutoActor = new Solver(result.PlayField);
         return result;
     }
 

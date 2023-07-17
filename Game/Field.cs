@@ -24,16 +24,33 @@ public struct TileState
     public int NeighboringMineCount;
 }
 
+/// <summary>
+/// Minefield class
+/// </summary>
 public class Field
 {
+    /// <summary>
+    /// Array of tiles
+    /// </summary>
     protected List<List<Tile>> Tiles;
+    /// <summary>
+    /// Width of the field
+    /// </summary>
     public readonly int Width;
+    /// <summary>
+    /// Height of the field
+    /// </summary>
     public readonly int Height;
 
-    
+    /// <summary>
+    /// Constructs an empty minefield with all tiles closed and unmarked
+    /// </summary>
+    /// <param name="width">Width</param>
+    /// <param name="height">Height</param>
+    /// <exception cref="ArgumentException">Field must have at least 1 tile</exception>
     public Field(int width, int height)
     {
-        if (width <= 0 && height <= 0)
+        if (width <= 0 || height <= 0)
         {
             throw new ArgumentException("Width and Height must be greater than 0");
         }
@@ -51,6 +68,12 @@ public class Field
         }
     }
 
+    /// <summary>
+    /// Gets the tile state in more presentable form
+    /// </summary>
+    /// <param name="x">x coordinate</param>
+    /// <param name="y">y coordinate</param>
+    /// <returns>Tile state</returns>
     public TileState GetTileState(int x, int y)
     {
         TileState state;
@@ -62,6 +85,12 @@ public class Field
         return state;
     }
 
+    /// <summary>
+    /// Gets the amount of mines around the tile
+    /// </summary>
+    /// <param name="x">x coordinate</param>
+    /// <param name="y">y coordinate</param>
+    /// <returns>Amount of mines</returns>
     private int GetNeighboringMineCount(int x, int y)
     {
         int count = 0;
