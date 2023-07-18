@@ -7,9 +7,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlBackgroundTransparentRevealBorderBrush}"
+    Loaded="AppOptionsPage_OnLoaded">
 
-    <Grid>
-
+    <Grid Margin="30" RowSpacing="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <CheckBox Grid.Row="0" Content="Use question marks" Name="UseQuestionMarks"/>
     </Grid>
 </Page>

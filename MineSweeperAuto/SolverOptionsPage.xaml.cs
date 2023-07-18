@@ -27,5 +27,11 @@ namespace MineSweeperAuto
         {
             this.InitializeComponent();
         }
+
+        private void SolverOptionsPage_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            //TODO: loading from settings file/database
+            // throw new NotImplementedException();
+        }
     }
 }

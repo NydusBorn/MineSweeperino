@@ -59,6 +59,7 @@ public class Player
         }
         else
         {
+            //TODO: add flagging adjacent unopened tiles if the amount of unopened tiles is equal to tile's mine count
             int adjCount = _playField.GetTileState(x, y).NeighboringMineCount;
             int flagCount = 0;
             bool foundQuestion = false;

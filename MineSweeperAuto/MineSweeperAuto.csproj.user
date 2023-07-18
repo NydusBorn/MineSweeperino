@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
+  <PropertyGroup>
+    <Source>C:\Users\nydus\Downloads\Game Icon.png</Source>
+    <SmallTileSource>C:\Users\nydus\Downloads\Game Icon.png</SmallTileSource>
+    <MediumTileSource>C:\Users\nydus\Downloads\Game Icon.png</MediumTileSource>
+    <WideTileSource>C:\Users\nydus\Downloads\Game Icon.png</WideTileSource>
+    <LargeTileSource>C:\Users\nydus\Downloads\Game Icon.png</LargeTileSource>
+    <AppIconSource>C:\Users\nydus\Downloads\Game Icon.png</AppIconSource>
+    <SplashScreenSource>C:\Users\nydus\Downloads\Game Icon.png</SplashScreenSource>
+    <PackageLogoSource>C:\Users\nydus\Downloads\Game Icon.png</PackageLogoSource>
+  </PropertyGroup>
   <ItemGroup>
     <None Update="App.xaml">
       <SubType>Designer</SubType>

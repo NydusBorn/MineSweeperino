@@ -10,15 +10,15 @@ public class Session
     /// <summary>
     /// Field for the game
     /// </summary>
-    public Field? PlayField;
+    public Field PlayField;
     /// <summary>
     /// Player actions
     /// </summary>
-    public Player? Actor;
+    public Player Actor;
     /// <summary>
     /// Solver for the game
     /// </summary>
-    public Solver? AutoActor;
+    public Solver AutoActor;
     /// <summary>
     /// Amount of mines generated for the game
     /// </summary>
@@ -63,6 +63,7 @@ public class Session
         result.MineCount = mineCount;
         result.Actor = new Player(result.PlayField);
         result.AutoActor = new Solver(result.PlayField);
+        result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
         return result;
     }
     /// <summary>
@@ -106,6 +107,7 @@ public class Session
         result.MineCount = placed;
         result.Actor = new Player(result.PlayField);
         result.AutoActor = new Solver(result.PlayField);
+        result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
         return result;
     }
 
@@ -148,8 +150,8 @@ public class Session
             for (; x > boundLeft; x--) sequence.Add(new Point(x, y));
             if (!skipUp)
             {
-                boundUp += 1;
-                if (boundUp == PlayField.Height)
+                boundUp -= 1;
+                if (boundUp == 0)
                 {
                     skipUp = true;
                     boundUp = PlayField.Height - 1;
@@ -160,8 +162,8 @@ public class Session
             for (; y < boundDown; y++) sequence.Add(new Point(x, y));
             if (!skipLeft)
             {
-                boundLeft += 1;
-                if (boundLeft == PlayField.Width)
+                boundLeft -= 1;
+                if (boundLeft == 0)
                 {
                     skipLeft = true;
                     boundLeft = PlayField.Width - 1;
@@ -172,7 +174,7 @@ public class Session
             for (; x < boundRight; x++) sequence.Add(new Point(x, y));
             if (!skipDown)
             {
-                boundDown -= 1;
+                boundDown += 1;
                 if (boundDown == PlayField.Height)
                 {
                     skipDown = true;

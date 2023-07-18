@@ -7,9 +7,37 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlBackgroundTransparentRevealBorderBrush}"
+    Loaded="GamePage_OnLoaded">
 
-    <Grid>
-
+    <Grid Margin="10" RowSpacing="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" ColumnSpacing="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="RestartSession">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <FontIcon Glyph="&#xE777;" FontSize="40"/>
+                    <TextBlock Text="Restart" FontSize="40"/>
+                </StackPanel>
+            </Button>
+            <StackPanel Grid.Column="1" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
+                <ImageIcon Source="Assets/Indicators/Clock.png" />
+                <TextBlock Text="h:m:s:ms" FontSize="30" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
+                <ImageIcon Source="Assets/Indicators/Mine.png" />
+                <TextBlock Text="x-y/x" FontSize="30" />
+            </StackPanel>
+        </Grid>
+        <ScrollViewer Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+            <Grid Name="ContentGrid" RowSpacing="10" ColumnSpacing="10" />
+        </ScrollViewer>
     </Grid>
 </Page>

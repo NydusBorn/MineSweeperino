@@ -20,10 +20,10 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" x:Name="AppTitleBar">
-            <Image Source="/Assets/WindowIcon.png" HorizontalAlignment="Left" Width="16" Height="16" Margin="8,0"/>
+            <Image Source="/Assets/Game Icon.png" HorizontalAlignment="Left" Width="16" Height="16" Margin="8,0"/>
             <TextBlock Text="MineSweeper Auto" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="NoWrap" Margin="32, 0, 0, 0"/>
         </Grid>
-        <NavigationView Name="NavigationViewPageSelector" Grid.Row="1" IsBackButtonVisible="Collapsed">
+        <NavigationView Name="NavigationViewPageSelector" Grid.Row="1" IsBackButtonVisible="Collapsed" SelectionChanged="NavigationViewPageSelector_OnSelectionChanged">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="Play">
                     <NavigationViewItem.Icon>
