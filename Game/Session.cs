@@ -50,7 +50,7 @@ public class Session
         };
         Random rnd = new Random();
         int mineCount = 0;
-        var pattern = result.GetSpiralPattern(startingPoint);
+        var pattern = result.GetGenerationPattern(startingPoint);
         foreach (var point in pattern)
         {
             if (rnd.NextDouble() < percentage)
@@ -66,6 +66,8 @@ public class Session
         result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
         return result;
     }
+    
+   
     /// <summary>
     /// Generates a session from a mine count
     /// </summary>
@@ -91,7 +93,7 @@ public class Session
             PlayField = new Field(width, height)
         };
         Random rnd = new Random();
-        var pattern = result.GetSpiralPattern(startingPoint);
+        var pattern = result.GetGenerationPattern(startingPoint);
         int prospected = 0;
         int placed = 0;
         foreach (var point in pattern)
@@ -112,78 +114,24 @@ public class Session
     }
 
     /// <summary>
-    /// Creates a sequence of points that forms a spiral, the sequence excludes the starter area (usually a 3x3 square).
+    /// Creates a sequence of points that starts from points close to the start and ends with the furthest points,, the sequence excludes the starter area (usually a 3x3 square).
     /// </summary>
     /// <param name="startingPoint"> Where to start the spiral</param>
     /// <returns>Spiral pattern with center at startingPoint</returns>
-    private List<Point> GetSpiralPattern(Point startingPoint)
+    private List<Point> GetGenerationPattern(Point startingPoint)
     {
         List<Point> sequence = new List<Point>();
-        sequence.Add(startingPoint);
-        int x = startingPoint.X;
-        int y = startingPoint.Y;
-        int boundLeft = x - 2 >= 0 ? x - 2 : 0;
-        int boundRight = x + 2 < PlayField.Width ? x + 2 : PlayField.Width;
-        int boundUp = y - 2 >= 0 ? y - 2 : 0;
-        int boundDown = y + 2 < PlayField.Height ? y + 2 : PlayField.Height;
-        bool skipLeft = x - 1 <= 0;
-        bool skipRight = x + 1 >= PlayField.Width - 1;
-        bool skipUp = y - 1 <= 0;
-        bool skipDown = y + 1 >= PlayField.Height - 1;
-        x = boundRight;
-        y = boundDown - 1;
-        while (true)
+        for (int i = 0; i < PlayField.Width; i++)
         {
-            if (skipRight) y = boundUp;
-            for (; y > boundUp; y--) sequence.Add(new Point(x, y));
-            if (!skipRight)
+            for (int j = 0; j < PlayField.Height; j++)
             {
-                boundRight += 1;
-                if (boundRight == PlayField.Width)
+                if (i < startingPoint.X - 1 || i > startingPoint.X + 1 || j < startingPoint.Y - 1 || j > startingPoint.Y + 1)
                 {
-                    skipRight = true;
-                    boundRight = PlayField.Width - 1;
+                    sequence.Add(new Point(i,j));
                 }
             }
-
-            if (skipUp) x = boundLeft;
-            for (; x > boundLeft; x--) sequence.Add(new Point(x, y));
-            if (!skipUp)
-            {
-                boundUp -= 1;
-                if (boundUp == 0)
-                {
-                    skipUp = true;
-                    boundUp = PlayField.Height - 1;
-                }
-            }
-
-            if (skipLeft) y = boundDown;
-            for (; y < boundDown; y++) sequence.Add(new Point(x, y));
-            if (!skipLeft)
-            {
-                boundLeft -= 1;
-                if (boundLeft == 0)
-                {
-                    skipLeft = true;
-                    boundLeft = PlayField.Width - 1;
-                }
-            }
-
-            if (skipDown) x = boundRight;
-            for (; x < boundRight; x++) sequence.Add(new Point(x, y));
-            if (!skipDown)
-            {
-                boundDown += 1;
-                if (boundDown == PlayField.Height)
-                {
-                    skipDown = true;
-                    boundDown = PlayField.Height - 1;
-                }
-            }
-
-            if (skipDown && skipLeft && skipRight && skipUp) break;
         }
+        sequence.Sort((x, y) => (Math.Abs(x.X - startingPoint.X) + Math.Abs(x.Y - startingPoint.Y)) - (Math.Abs(y.X - startingPoint.X) - Math.Abs(y.Y - startingPoint.Y)));
         return sequence;
     }
 }

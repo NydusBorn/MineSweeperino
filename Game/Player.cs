@@ -63,17 +63,17 @@ public class Player
             int adjCount = _playField.GetTileState(x, y).NeighboringMineCount;
             int flagCount = 0;
             bool foundQuestion = false;
-            for (int i = x - 1; i <= x + 1; i++)
+            for (int i = -1; i <= 1; i++)
             {
-                for (int j = y - 1; j <= y + 1; j++)
+                for (int j = -1; j <= 1; j++)
                 {
-                    if (i != j && i >= 0 && i < _playField.Width && j >= 0 && j < _playField.Height )
+                    if ((i != 0 || j != 0) && x + i >= 0 && x + i < _playField.Width && y + j >= 0 && y + j < _playField.Height )
                     {
-                        if (_playField.GetTileState(i,j).HasFlag)
+                        if (_playField.GetTileState(x + i,y + j).HasFlag)
                         {
                             flagCount += 1;
                         }
-                        if (_playField.GetTileState(i,j).HasQuestionMark)
+                        if (_playField.GetTileState(x + i,y + j).HasQuestionMark)
                         {
                             foundQuestion = true;
                         }
@@ -100,20 +100,20 @@ public class Player
     /// <returns>True if one of the tiles had a mine, false otherwise</returns>
     private bool OpenAdjacentTiles(int x, int y)
     {
-        for (int i = x - 1; i <= x + 1; i++)
+        for (int i = -1; i <= 1; i++)
         {
-            for (int j = y - 1; j <= y + 1; j++)
+            for (int j = -1; j <= 1; j++)
             {
-                if (i != j && i >= 0 && i < _playField.Width && j >= 0 && j < _playField.Height && !_playField.GetTileState(i,j).HasFlag)
+                if ((i != 0 || j != 0) && x + i >= 0 && x + i < _playField.Width && y + j >= 0 && y + j < _playField.Height && !_playField.GetTileState(x + i, y + j).HasFlag)
                 {
-                    if (_playField.OpenTile(i,j))
+                    if (_playField.OpenTile(x + i,y + j))
                     {
                         return true;
                     }
 
-                    if (_playField.GetTileState(i,j).NeighboringMineCount == 0)
+                    if (_playField.GetTileState(x + i,y + j).NeighboringMineCount == 0)
                     {
-                        OpenZeroes(i,j);
+                        OpenZeroes(x + i,y + j);
                     }
                 }
             }
@@ -138,16 +138,16 @@ public class Player
             foreach (var point in toCheck)
             {
                 visited.Add(point);
-                for (int i = point.X - 1; i <= point.X + 1; i++)
+                for (int i = -1; i <= 1; i++)
                 {
-                    for (int j = point.Y - 1; j <= point.Y + 1; j++)
+                    for (int j = -1; j <= 1; j++)
                     {
-                        if (i != j && i >= 0 && i < _playField.Width && j >= 0 && j < _playField.Height)
+                        if ((i != 0 || j != 0) && point.X + i >= 0 && point.X + i < _playField.Width && point.Y + j >= 0 && point.Y + j < _playField.Height)
                         {
-                            _playField.OpenTile(i, j);
-                            if (_playField.GetTileState(i, j).NeighboringMineCount == 0 && !visited.Contains(new Point(i, j)) && !toCheck.Contains(new Point(i,j)))
+                            _playField.OpenTile(point.X + i, point.Y + j);
+                            if (_playField.GetTileState(point.X + i, point.Y + j).NeighboringMineCount == 0 && !visited.Contains(new Point(point.X + i, point.Y + j)) && !toCheck.Contains(new Point(point.X + i,point.Y + j)))
                             {
-                                upForCheck.Add(new Point(i, j));
+                                upForCheck.Add(new Point(point.X + i, point.Y + j));
                             }
                         }
                         

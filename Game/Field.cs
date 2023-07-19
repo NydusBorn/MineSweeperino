@@ -94,11 +94,11 @@ public class Field
     private int GetNeighboringMineCount(int x, int y)
     {
         int count = 0;
-        for (int i = x - 1; i <= x + 1; i++)
+        for (int i = -1; i <= 1; i++)
         {
-            for (int j = y - 1; j <= y + 1; j++)
+            for (int j = -1; j <= 1; j++)
             {
-                if (i != j && i >= 0 && i < Width && j >= 0 && j < Height && (Tiles[i][j] & Tile.HasMine) != 0)
+                if ((i != 0 || j != 0) && x + i >= 0 && x + i < Width && y + j >= 0 && y + j < Height && (Tiles[x + i][y + j] & Tile.HasMine) != 0)
                 {
                     count += 1;
                 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
@@ -20,6 +22,7 @@ namespace MineSweeperAuto
     public sealed partial class GamePage : Page
     {
         private Session CurrentSession;
+        private List<List<Button>> DrawnTiles = new ();
         public GamePage()
         {
             this.InitializeComponent();
@@ -28,7 +31,7 @@ namespace MineSweeperAuto
         private void GamePage_OnLoaded(object sender, RoutedEventArgs e)
         {
             // CurrentSession = MainWindow.CurrentSession;
-            CurrentSession = Session.GenerateFromPercentage(10, 10, 0.1, true, new Point(5, 5));
+            CurrentSession = Session.GenerateFromPercentage(30, 20, 0.1, true, new Point(15, 10));
             UpdateGridSize();
             UpdateView();
         }
@@ -50,6 +53,9 @@ namespace MineSweeperAuto
 
         private void UpdateView()
         {
+            //TODO: draw only the visible zone
+            //TODO: make a Button buffer from which to source the buttons
+            ContentGrid.Children.Clear();
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
                 for (int j = 0; j < CurrentSession.PlayField.Height; j++)
@@ -71,6 +77,14 @@ namespace MineSweeperAuto
                     {
                         tile.Background = new SolidColorBrush(Color.FromArgb(60, 30 , 30, 30));
                     }
+                    else if (CurrentSession.PlayField.GetTileState(i,j).HasFlag)
+                    {
+                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 250 , 0, 0));
+                    }
+                    else if (CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark)
+                    {
+                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 250 , 250, 250));
+                    }
                     else
                     {
                         tile.Background = new SolidColorBrush(Color.FromArgb(60, 60, 60, 60));
@@ -80,20 +94,27 @@ namespace MineSweeperAuto
                     ContentGrid.Children.Add(tile);
                     Grid.SetColumn(tile, i);
                     Grid.SetRow(tile, j);
-                    tile.PointerPressed += TileClick;
+                    tile.Click += TileClick;
+                    tile.PointerPressed += TileMark;
                 }
             }
         }
-
-        private void TileClick(object sender, PointerRoutedEventArgs e)
+        
+        private void TileClick(object sender, RoutedEventArgs e)
         {
-            //TODO: make this work
+            var target = sender as Button;
+            CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
+            UpdateView();
+        }
+        private void TileMark(object sender, PointerRoutedEventArgs e)
+        {
             var target = sender as Button;
             var pressData = e.GetCurrentPoint(target);
-            if (pressData.Properties.IsLeftButtonPressed)
+            if (pressData.Properties.IsRightButtonPressed)
             {
-                CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
+                CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), true);
             }
+            UpdateView();
         }
 
         private void RestartSession(object sender, RoutedEventArgs e)
