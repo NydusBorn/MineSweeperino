@@ -15,6 +15,7 @@
     <None Remove="AppOptionsPage.xaml" />
     <None Remove="GameOptionsPage.xaml" />
     <None Remove="GamePage.xaml" />
+    <None Remove="HelpPage.xaml" />
     <None Remove="SolverOptionsPage.xaml" />
   </ItemGroup>
 
@@ -64,6 +65,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Game\Game.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="HelpPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!-- 

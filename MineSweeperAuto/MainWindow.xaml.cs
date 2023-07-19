@@ -51,6 +51,10 @@ namespace MineSweeperAuto
             {
                 ContentFrame.Navigate(typeof(SolverOptionsPage));
             }
+            else if ((string)args.SelectedItem.As<NavigationViewItem>().Content == "Help")
+            {
+                ContentFrame.Navigate(typeof(HelpPage));
+            }
         }
     }
 }
