@@ -33,7 +33,12 @@ namespace MineSweeperAuto
         private void GamePage_OnLoaded(object sender, RoutedEventArgs e)
         {
             // CurrentSession = MainWindow.CurrentSession;
-            CurrentSession = Session.GenerateFromPercentage(30, 20, 0.1, true, new Point(15, 10));
+            InitialiseSession(30,20);
+        }
+        
+        private void InitialiseSession(int width, int height)
+        {
+            CurrentSession = Session.GenerateDummy(width, height);
             UpdateGridSize();
             UpdateView();
         }
@@ -108,12 +113,29 @@ namespace MineSweeperAuto
                     ContentGrid.Children.Add(tile);
                     Grid.SetColumn(tile, i);
                     Grid.SetRow(tile, j);
-                    tile.Click += TileClick;
-                    tile.PointerPressed += TileMark;
+                    if (CurrentSession.IsDummySession)
+                    {
+                        tile.Click += StartSession;
+                        tile.Click -= TileClick;
+                        tile.PointerPressed -= TileMark;
+                    }
+                    else
+                    {
+                        tile.Click -= StartSession;
+                        tile.Click += TileClick;
+                        tile.PointerPressed += TileMark;
+                    }
+                    
                 }
             }
         }
         
+        private void StartSession(object sender, RoutedEventArgs e)
+        {
+            Button target = sender as Button;
+            CurrentSession = Session.GenerateFromPercentage(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, 0.1, true, new Point(Grid.GetColumn(target), Grid.GetRow(target)));
+            UpdateView();
+        }
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;

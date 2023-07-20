@@ -23,6 +23,10 @@ public class Session
     /// Amount of mines generated for the game
     /// </summary>
     public int MineCount { get; private set; }
+    /// <summary>
+    /// indicates whether this session is used as an empty field
+    /// </summary>
+    public bool IsDummySession { get; private set; } = false;
     
     /// <summary>
     /// Generates a session from a mine percentage
@@ -76,7 +80,7 @@ public class Session
     /// <param name="mineCount">How many mines have to be placed</param>
     /// <param name="guaranteedSolution">Must be possible to solve without guessing</param>
     /// <param name="startingPoint">Where to place the starter zone</param>
-    /// <returns></returns>
+    /// <returns>Session ready to play</returns>
     /// <exception cref="ArgumentException">Mine count must be 0 or greater, and starting point must be within the field</exception>
     public static Session GenerateFromCount(int width, int height, int mineCount, bool guaranteedSolution, Point startingPoint)
     {
@@ -113,6 +117,20 @@ public class Session
         return result;
     }
 
+    /// <summary>
+    /// Generates an empty session
+    /// </summary>
+    /// <param name="width">Width of the field</param>
+    /// <param name="height">Height of the field</param>
+    /// <returns>Session for marking purposes</returns>
+    public static Session GenerateDummy(int width, int height)
+    {
+        return new Session
+        {
+            PlayField = new Field(width, height),
+            IsDummySession = true
+        };
+    }
     /// <summary>
     /// Creates a sequence of points that starts from points close to the start and ends with the furthest points,, the sequence excludes the starter area (usually a 3x3 square).
     /// </summary>
