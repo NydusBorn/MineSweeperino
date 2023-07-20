@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -8,6 +9,7 @@ using Game;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Point = System.Drawing.Point;
 using PointerRoutedEventArgs = Microsoft.UI.Xaml.Input.PointerRoutedEventArgs;
 
@@ -54,7 +56,8 @@ namespace MineSweeperAuto
         private void UpdateView()
         {
             //TODO: draw only the visible zone
-            //TODO: make a Button buffer from which to source the buttons
+            //TODO: make a Button buffer from which to source the button, initialise it at program start, use data about screen resolution to determine the amount of tiles to buffer
+            //TODO: call this on window resize events
             ContentGrid.Children.Clear();
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
@@ -75,7 +78,18 @@ namespace MineSweeperAuto
                     
                     if (CurrentSession.PlayField.GetTileState(i,j).IsOpen)
                     {
-                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 30 , 30, 30));
+                        if (CurrentSession.PlayField.GetTileState(i,j).HasMine)
+                        {
+                            tile.Background = new SolidColorBrush(Color.FromArgb(120, 250 , 0, 0));
+                            ImageIcon img = new ImageIcon();
+                            img.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/Mine.png"));
+                            tile.Content = img;
+                        }
+                        else
+                        {
+                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 30 , 30, 30));
+                        }
+                        
                     }
                     else if (CurrentSession.PlayField.GetTileState(i,j).HasFlag)
                     {
@@ -103,18 +117,21 @@ namespace MineSweeperAuto
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;
-            CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
-            UpdateView();
+            if (!CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasFlag && !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasQuestionMark)
+            {
+                CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
+                UpdateView();
+            }
         }
         private void TileMark(object sender, PointerRoutedEventArgs e)
         {
             var target = sender as Button;
             var pressData = e.GetCurrentPoint(target);
-            if (pressData.Properties.IsRightButtonPressed)
+            if (pressData.Properties.IsRightButtonPressed && !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen)
             {
                 CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), true);
+                UpdateView();
             }
-            UpdateView();
         }
 
         private void RestartSession(object sender, RoutedEventArgs e)

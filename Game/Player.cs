@@ -106,6 +106,7 @@ public class Player
             {
                 if ((i != 0 || j != 0) && x + i >= 0 && x + i < _playField.Width && y + j >= 0 && y + j < _playField.Height && !_playField.GetTileState(x + i, y + j).HasFlag)
                 {
+                    VoidMark(x + i, y + j);
                     if (_playField.OpenTile(x + i,y + j))
                     {
                         return true;
@@ -120,6 +121,24 @@ public class Player
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Removes any mark from the tile
+    /// </summary>
+    /// <param name="x">x coordinate</param>
+    /// <param name="y">y coordinate</param>
+    private void VoidMark(int x, int y)
+    {
+        var tile = _playField.GetTileState(x, y);
+        if (tile.HasFlag)
+        {
+            CycleMark(x,y, false);
+        }
+        else if (tile.HasQuestionMark)
+        {
+            CycleMark(x,y,true);
+        }
     }
 
     /// <summary>
@@ -144,6 +163,7 @@ public class Player
                     {
                         if ((i != 0 || j != 0) && point.X + i >= 0 && point.X + i < _playField.Width && point.Y + j >= 0 && point.Y + j < _playField.Height)
                         {
+                            VoidMark(point.X + i, point.Y + j);
                             _playField.OpenTile(point.X + i, point.Y + j);
                             if (_playField.GetTileState(point.X + i, point.Y + j).NeighboringMineCount == 0 && !visited.Contains(new Point(point.X + i, point.Y + j)) && !toCheck.Contains(new Point(point.X + i,point.Y + j)))
                             {
