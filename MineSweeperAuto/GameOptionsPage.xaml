@@ -11,6 +11,15 @@
     Loaded="GameOptionsPage_OnLoaded">
 
     <Grid Margin="30" RowSpacing="20">
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Select Difficulty"/>
+            <ComboBox>
+                <ComboBoxItem Content="Easy" />
+            </ComboBox>
+        </StackPanel>
     </Grid>
 </Page>
