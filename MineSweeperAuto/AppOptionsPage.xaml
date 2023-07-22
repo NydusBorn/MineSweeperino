@@ -15,6 +15,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <CheckBox Grid.Row="0" Content="Use question marks" Name="UseQuestionMarks"/>
+        <CheckBox Grid.Row="0" Content="Use question marks" Name="UseQuestionMarks" Checked="UseQuestionMarks_OnChecked" Unchecked="UseQuestionMarks_OnUnchecked"/>
     </Grid>
 </Page>

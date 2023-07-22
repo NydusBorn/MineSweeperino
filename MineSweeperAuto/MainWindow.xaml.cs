@@ -40,18 +40,27 @@ namespace MineSweeperAuto
 
         void CreateDB()
         {
-            DBConnection.Close();
-            DBConnection.Dispose();
-            DBConnection = new SqliteConnection("Data Source=MineSweeperAuto.db");
-            SqliteConnection.ClearAllPools();
-            File.Delete("MineSweeperAuto.db");
-            DBConnection.Open();
             var creator = DBConnection.CreateCommand();
+
+            creator.CommandText = "drop table if exists GameSettings";
+            creator.ExecuteNonQuery();
             creator.CommandText = "CREATE TABLE GameSettings (FieldWidth INTEGER, FieldHeight INTEGER, MinePercentage REAL, MineCount INTEGER, GuaranteeSolution INTEGER)";
+            creator.ExecuteNonQuery();
+            creator.CommandText = "insert into GameSettings values(5,5,0.1,0,0)";
+            creator.ExecuteNonQuery();
+            
+            creator.CommandText = "drop table if exists AppSettings ";
             creator.ExecuteNonQuery();
             creator.CommandText = "CREATE TABLE AppSettings (UseQuestionMarks INTEGER)";
             creator.ExecuteNonQuery();
+            creator.CommandText = "insert into AppSettings values(1)";
+            creator.ExecuteNonQuery();
+            
+            creator.CommandText = "drop table if exists SolverSettings";
+            creator.ExecuteNonQuery();
             creator.CommandText = "CREATE TABLE SolverSettings (MillisecondsPerMove INTEGER)";
+            creator.ExecuteNonQuery();
+            creator.CommandText = "insert into SolverSettings values(1000)";
             creator.ExecuteNonQuery();
         }
         
@@ -73,7 +82,8 @@ namespace MineSweeperAuto
             }
 
             if (!hasAppSettings || !hasGameSettings || !hasSolverSettings) return false;
-
+            reader.Close();
+            
             cmd.CommandText = "PRAGMA table_info('GameSettings')";
             reader = cmd.ExecuteReader();
 
@@ -103,7 +113,8 @@ namespace MineSweeperAuto
             }
             else return false;
             if (reader.Read()) return false;
-
+            reader.Close();
+            
             cmd.CommandText = "PRAGMA table_info('AppSettings')";
             reader = cmd.ExecuteReader();
             
@@ -113,6 +124,7 @@ namespace MineSweeperAuto
             }
             else return false;
             if (reader.Read()) return false;
+            reader.Close();
             
             cmd.CommandText = "PRAGMA table_info('SolverSettings')";
             reader = cmd.ExecuteReader();
@@ -122,6 +134,7 @@ namespace MineSweeperAuto
             }
             else return false;
             if (reader.Read()) return false;
+            reader.Close();
             
             return true;
         }

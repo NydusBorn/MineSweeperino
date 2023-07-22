@@ -23,6 +23,7 @@ namespace MineSweeperAuto
     /// </summary>
     public sealed partial class GamePage : Page
     {
+        private bool CurrentQuestionMarkPolicy;
         private Session CurrentSession;
         private List<List<Button>> DrawnTiles = new ();
         public GamePage()
@@ -33,6 +34,13 @@ namespace MineSweeperAuto
         private void GamePage_OnLoaded(object sender, RoutedEventArgs e)
         {
             // CurrentSession = MainWindow.CurrentSession;
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "SELECT UseQuestionMarks FROM AppSettings";
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
+            }
             InitialiseSession(30,20);
         }
         
@@ -151,7 +159,7 @@ namespace MineSweeperAuto
             var pressData = e.GetCurrentPoint(target);
             if (pressData.Properties.IsRightButtonPressed && !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen)
             {
-                CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), true);
+                CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), CurrentQuestionMarkPolicy);
                 UpdateView();
             }
         }

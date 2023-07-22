@@ -23,10 +23,11 @@ public class Player
 
     /// <summary>
     /// Cycles the marking on the tile in the next order: None -> Flag -> Question -> None...
+    /// if question marks disabled: None -> Flag -> None...
     /// </summary>
     /// <param name="x">x coordinate</param>
     /// <param name="y">y coordinate</param>
-    /// <param name="questionMarkEnabled">Whether to enable question marks: None -> Flag -> None...</param>
+    /// <param name="questionMarkEnabled">Whether to enable question marks</param>
     public void CycleMark(int x, int y, bool questionMarkEnabled)
     {
         if (!questionMarkEnabled && _playField.GetTileState(x,y).HasFlag)

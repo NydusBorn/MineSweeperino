@@ -30,8 +30,27 @@ namespace MineSweeperAuto
 
         private void AppOptionsPage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            //TODO: loading from settings file/database
-            // throw new NotImplementedException();
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "SELECT UseQuestionMarks FROM AppSettings";
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                UseQuestionMarks.IsChecked = (long)reader["UseQuestionMarks"] == 1;
+            }
+        }
+
+        private void UseQuestionMarks_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "update AppSettings set UseQuestionMarks = 1 where true;";
+            cmd.ExecuteNonQuery();
+        }
+
+        private void UseQuestionMarks_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "update AppSettings set UseQuestionMarks = 0 where true;";
+            cmd.ExecuteNonQuery();
         }
     }
 }
