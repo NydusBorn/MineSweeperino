@@ -40,13 +40,17 @@ namespace MineSweeperAuto
 
         void CreateDB()
         {
+            DBConnection.Close();
+            DBConnection.Dispose();
+            SqliteConnection.ClearAllPools();
+            DBConnection.Open();
             var creator = DBConnection.CreateCommand();
 
             creator.CommandText = "drop table if exists GameSettings";
             creator.ExecuteNonQuery();
-            creator.CommandText = "CREATE TABLE GameSettings (FieldWidth INTEGER, FieldHeight INTEGER, UsePercentage INTEGER, MinePercentage REAL, MineCount INTEGER, GuaranteeSolution INTEGER)";
+            creator.CommandText = "CREATE TABLE GameSettings (CustomDifficulty INTEGER, FieldWidth INTEGER, FieldHeight INTEGER, UsePercentage INTEGER, MinePercentage REAL, MineCount INTEGER, GuaranteeSolution INTEGER)";
             creator.ExecuteNonQuery();
-            creator.CommandText = "insert into GameSettings values(5, 5, 1, 0.1, 0, 0)";
+            creator.CommandText = "insert into GameSettings values(0, 5, 5, 1, 0.1, 0, 0)";
             creator.ExecuteNonQuery();
             
             creator.CommandText = "drop table if exists AppSettings ";
@@ -87,6 +91,11 @@ namespace MineSweeperAuto
             cmd.CommandText = "PRAGMA table_info('GameSettings')";
             reader = cmd.ExecuteReader();
 
+            if (reader.Read())
+            {
+                if (reader["name"].ToString() != "CustomDifficulty") return false;
+            }
+            else return false;
             if (reader.Read())
             {
                 if (reader["name"].ToString() != "FieldWidth") return false;

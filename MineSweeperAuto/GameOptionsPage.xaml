@@ -14,12 +14,35 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <TextBlock Text="Select Difficulty"/>
-            <ComboBox>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" >
+            <TextBlock Text="Difficulty:" VerticalAlignment="Center"/>
+            <ComboBox Name="ComboBoxDiffChooser" SelectionChanged="ComboBoxDiffChooser_OnSelectionChanged">
+                <ComboBoxItem Content="Beginner" />
                 <ComboBoxItem Content="Easy" />
+                <ComboBoxItem Content="Normal" />
+                <ComboBoxItem Content="Hard" />
+                <ComboBoxItem Content="Expert" />
+                <ComboBoxItem Content="Insane" />
+                <ComboBoxItem Content="Custom" />
             </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Size:" VerticalAlignment="Center"/>
+            <TextBox Name="TextBoxWidth" Width="100" TextChanged="TextBoxWidth_OnTextChanged"/>
+            <TextBlock Text="x" VerticalAlignment="Center"/>
+            <TextBox Name="TextBoxHeight" Width="100" TextChanged="TextBoxHeight_OnTextChanged"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10">
+            <TextBlock Text="Mine Concentration:" VerticalAlignment="Center"/>
+            <CheckBox Name="CheckBoxUsePercentage" Content="Use Percentage" VerticalAlignment="Center" Checked="CheckBoxUsePercentage_OnChecked" Unchecked="CheckBoxUsePercentage_OnUnchecked"/>
+            <TextBox Name="TextBoxMines" TextChanged="TextBoxMines_OnTextChanged"/>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10">
+            <CheckBox Name="CheckBoxSolutionGuaranteed" Content="Solution guaranteed" Checked="CheckBoxSolutionGuaranteed_OnChecked" Unchecked="CheckBoxSolutionGuaranteed_OnUnchecked"/>
         </StackPanel>
     </Grid>
 </Page>

@@ -41,14 +41,20 @@ namespace MineSweeperAuto
             {
                 CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
             }
-            InitialiseSession(30,20);
+            InitialiseSession();
         }
         
-        private void InitialiseSession(int width, int height)
+        private void InitialiseSession()
         {
-            CurrentSession = Session.GenerateDummy(width, height);
-            UpdateGridSize();
-            UpdateView();
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "SELECT * FROM GameSettings";
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                CurrentSession = Session.GenerateDummy(int.Parse(reader["FieldWidth"].ToString()), int.Parse(reader["FieldHeight"].ToString()));
+                UpdateGridSize();
+                UpdateView();
+            }
         }
 
         private void UpdateGridSize()
@@ -140,9 +146,22 @@ namespace MineSweeperAuto
         
         private void StartSession(object sender, RoutedEventArgs e)
         {
-            Button target = sender as Button;
-            CurrentSession = Session.GenerateFromPercentage(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, 0.1, true, new Point(Grid.GetColumn(target), Grid.GetRow(target)));
-            UpdateView();
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "SELECT * FROM GameSettings";
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                Button target = sender as Button;
+                if (reader["UsePercentage"].ToString() == "1")
+                {
+                    CurrentSession = Session.GenerateFromPercentage(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, (double)reader["MinePercentage"], reader["GuaranteeSolution"].ToString() == "1", new Point(Grid.GetColumn(target), Grid.GetRow(target)));
+                }
+                else
+                {
+                    CurrentSession = Session.GenerateFromCount(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, int.Parse(reader["MineCount"].ToString()), reader["GuaranteeSolution"].ToString() == "1", new Point(Grid.GetColumn(target), Grid.GetRow(target)));
+                }
+                UpdateView();
+            }
         }
         private void TileClick(object sender, RoutedEventArgs e)
         {
@@ -166,7 +185,7 @@ namespace MineSweeperAuto
 
         private void RestartSession(object sender, RoutedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            InitialiseSession();
         }
     }
 }
