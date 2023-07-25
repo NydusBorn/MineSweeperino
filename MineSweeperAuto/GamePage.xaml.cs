@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.UI;
@@ -26,6 +29,8 @@ namespace MineSweeperAuto
         private bool CurrentQuestionMarkPolicy;
         private Session CurrentSession;
         private List<List<Button>> DrawnTiles = new ();
+        private Task UpdateTimer;
+        private CancellationTokenSource cts = new ();
         public GamePage()
         {
             this.InitializeComponent();
@@ -42,6 +47,10 @@ namespace MineSweeperAuto
                 CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
             }
             InitialiseSession();
+            if (CurrentSession.CurrentState == Session.GameState.Active)
+            {
+                UpdateTimer = UpdateTimer_Tick(cts.Token);
+            }
         }
         
         private void InitialiseSession()
@@ -72,12 +81,38 @@ namespace MineSweeperAuto
             }
         }
 
+        private async Task UpdateTimer_Tick(CancellationToken ct)
+        {
+            Stopwatch timer = CurrentSession.GameTimer;
+            int counter = 0;
+            while (true)
+            {
+                if (ct.IsCancellationRequested)
+                {
+                    return;
+                }
+                await Task.Delay(10);
+                if (CurrentSession.CurrentState == Session.GameState.Active)
+                {
+                    TextBlockTime.Text = $"{timer.Elapsed.Hours}:{timer.Elapsed.Minutes:D2}:{timer.Elapsed.Seconds:D2}:{timer.Elapsed.Milliseconds:D3}";
+                }
+
+                counter += 1;
+                if (counter == 100)
+                {
+                    // call update view
+                    counter = 0;
+                }
+            }
+        }
+        
         private void UpdateView()
         {
             //TODO: draw only the visible zone
             //TODO: make a Button buffer from which to source the button, initialise it at program start, use data about screen resolution to determine the amount of tiles to buffer
             //TODO: call this on window resize events
             ContentGrid.Children.Clear();
+            int markedTiles = 0;
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
                 for (int j = 0; j < CurrentSession.PlayField.Height; j++)
@@ -113,6 +148,7 @@ namespace MineSweeperAuto
                     else if (CurrentSession.PlayField.GetTileState(i,j).HasFlag)
                     {
                         tile.Background = new SolidColorBrush(Color.FromArgb(60, 250 , 0, 0));
+                        markedTiles += 1;
                     }
                     else if (CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark)
                     {
@@ -142,6 +178,8 @@ namespace MineSweeperAuto
                     
                 }
             }
+
+            TextBlockMines.Text = $"{CurrentSession.MineCount - markedTiles}/{CurrentSession.MineCount}";
         }
         
         private void StartSession(object sender, RoutedEventArgs e)
@@ -161,6 +199,7 @@ namespace MineSweeperAuto
                     CurrentSession = Session.GenerateFromCount(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, int.Parse(reader["MineCount"].ToString()), reader["GuaranteeSolution"].ToString() == "1", new Point(Grid.GetColumn(target), Grid.GetRow(target)));
                 }
                 UpdateView();
+                UpdateTimer = UpdateTimer_Tick(cts.Token);
             }
         }
         private void TileClick(object sender, RoutedEventArgs e)
@@ -186,6 +225,8 @@ namespace MineSweeperAuto
         private void RestartSession(object sender, RoutedEventArgs e)
         {
             InitialiseSession();
+            cts.Cancel();
+            cts = new();
         }
     }
 }

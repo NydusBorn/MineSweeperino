@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 
 namespace Game;
 
@@ -27,7 +28,41 @@ public class Session
     /// indicates whether this session is used as an empty field
     /// </summary>
     public bool IsDummySession { get; private set; } = false;
-    
+    /// <summary>
+    /// Possible states in the game
+    /// </summary>
+    public enum GameState
+    {
+        /// <summary>
+        /// Not started, supposed to be an empty field
+        /// </summary>
+        Initialised,
+        /// <summary>
+        /// Clock is ticking
+        /// </summary>
+        Active,
+        /// <summary>
+        /// Clock is not ticking
+        /// </summary>
+        Paused,
+        /// <summary>
+        /// A mine has been uncovered
+        /// </summary>
+        Loss,
+        /// <summary>
+        /// All mines have been marked and all empty tiles are open
+        /// </summary>
+        Win
+    }
+    /// <summary>
+    /// State of the session
+    /// </summary>
+    public GameState CurrentState { get; private set; }
+
+    /// <summary>
+    /// Time spent solving the field
+    /// </summary>
+    public Stopwatch GameTimer { get; private set; } = new Stopwatch();
     /// <summary>
     /// Generates a session from a mine percentage
     /// </summary>
@@ -68,6 +103,8 @@ public class Session
         result.Actor = new Player(result.PlayField);
         result.AutoActor = new Solver(result.PlayField);
         result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
+        result.CurrentState = GameState.Active;
+        result.GameTimer.Start();
         return result;
     }
     
@@ -114,6 +151,8 @@ public class Session
         result.Actor = new Player(result.PlayField);
         result.AutoActor = new Solver(result.PlayField);
         result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
+        result.CurrentState = GameState.Active;
+        result.GameTimer.Start();
         return result;
     }
 
@@ -128,7 +167,8 @@ public class Session
         return new Session
         {
             PlayField = new Field(width, height),
-            IsDummySession = true
+            IsDummySession = true,
+            CurrentState = GameState.Initialised
         };
     }
     /// <summary>
@@ -151,5 +191,17 @@ public class Session
         }
         sequence.Sort((x, y) => (Math.Abs(x.X - startingPoint.X) + Math.Abs(x.Y - startingPoint.Y)) - (Math.Abs(y.X - startingPoint.X) - Math.Abs(y.Y - startingPoint.Y)));
         return sequence;
+    }
+
+    public void PauseGame()
+    {
+        GameTimer.Stop();
+        CurrentState = GameState.Paused;
+    }
+
+    public void ResumeGame()
+    {
+        GameTimer.Start();
+        CurrentState = GameState.Active;
     }
 }

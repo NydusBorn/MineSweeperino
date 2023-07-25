@@ -16,6 +16,8 @@ using Microsoft.UI.Xaml.Navigation;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
+//TODO: Use cards like in windows settings app.
+
 namespace MineSweeperAuto
 {
     /// <summary>

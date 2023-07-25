@@ -9,7 +9,6 @@
     mc:Ignorable="d"
     Background="{ThemeResource SystemControlBackgroundTransparentRevealBorderBrush}"
     Loaded="GamePage_OnLoaded">
-
     <Grid Margin="10" RowSpacing="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="100" />
@@ -29,11 +28,11 @@
             </Button>
             <StackPanel Grid.Column="1" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
                 <ImageIcon Source="Assets/Indicators/Clock.png" />
-                <TextBlock Text="h:m:s:ms" FontSize="30" />
+                <TextBlock Name="TextBlockTime" Text="h:m:s:ms" FontSize="30" />
             </StackPanel>
             <StackPanel Grid.Column="2" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
                 <ImageIcon Source="Assets/Indicators/Mine.png" />
-                <TextBlock Text="x-y/x" FontSize="30" />
+                <TextBlock Name="TextBlockMines" Text="x-y/x" FontSize="30" />
             </StackPanel>
         </Grid>
         <ScrollViewer Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" 
