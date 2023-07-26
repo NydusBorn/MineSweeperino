@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Input;
@@ -28,9 +29,9 @@ namespace MineSweeperAuto
     {
         private bool CurrentQuestionMarkPolicy;
         private Session CurrentSession;
-        private List<List<Button>> DrawnTiles = new ();
         private Task UpdateTimer;
-        private CancellationTokenSource cts = new ();
+        private CancellationTokenSource cts = new();
+
         public GamePage()
         {
             this.InitializeComponent();
@@ -46,13 +47,14 @@ namespace MineSweeperAuto
             {
                 CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
             }
+
             InitialiseSession();
             if (CurrentSession.CurrentState == Session.GameState.Active)
             {
                 UpdateTimer = UpdateTimer_Tick(cts.Token);
             }
         }
-        
+
         private void InitialiseSession()
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -60,7 +62,8 @@ namespace MineSweeperAuto
             var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                CurrentSession = Session.GenerateDummy(int.Parse(reader["FieldWidth"].ToString()), int.Parse(reader["FieldHeight"].ToString()));
+                CurrentSession = Session.GenerateDummy(int.Parse(reader["FieldWidth"].ToString()),
+                    int.Parse(reader["FieldHeight"].ToString()));
                 UpdateGridSize();
                 UpdateView();
             }
@@ -72,7 +75,7 @@ namespace MineSweeperAuto
             ContentGrid.ColumnDefinitions.Clear();
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
-                ContentGrid.ColumnDefinitions.Add(new ColumnDefinition(){ Width = new GridLength(50)});
+                ContentGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(50) });
             }
 
             for (int i = 0; i < CurrentSession.PlayField.Height; i++)
@@ -91,10 +94,12 @@ namespace MineSweeperAuto
                 {
                     return;
                 }
+
                 await Task.Delay(10);
                 if (CurrentSession.CurrentState == Session.GameState.Active)
                 {
-                    TextBlockTime.Text = $"{timer.Elapsed.Hours}:{timer.Elapsed.Minutes:D2}:{timer.Elapsed.Seconds:D2}:{timer.Elapsed.Milliseconds:D3}";
+                    TextBlockTime.Text =
+                        $"{timer.Elapsed.Hours}:{timer.Elapsed.Minutes:D2}:{timer.Elapsed.Seconds:D2}:{timer.Elapsed.Milliseconds:D3}";
                 }
 
                 counter += 1;
@@ -105,83 +110,144 @@ namespace MineSweeperAuto
                 }
             }
         }
-        
-        private void UpdateView()
+
+        public const int BufferLine = 4;
+        private Dictionary<(int, int), Button> DrawnButtons = new();
+
+        private async void UpdateView()
         {
-            //TODO: draw only the visible zone
-            //TODO: make a Button buffer from which to source the button, initialise it at program start, use data about screen resolution to determine the amount of tiles to buffer
-            //TODO: call this on window resize events
-            ContentGrid.Children.Clear();
+            //TODO: check for light theme on custom icons in the clock and mine counter
+            if (ScrollViewerVisibleArea.ViewportHeight == 0)
+            {
+                await Task.Delay(50);
+            }
+
             int markedTiles = 0;
+            int mineWidth = (int)((ContentGrid.RowSpacing * 2) + ContentGrid.RowDefinitions[0].Height.Value);
+            int leftViewBound = (int)ScrollViewerVisibleArea.HorizontalOffset / mineWidth;
+            leftViewBound = Math.Max(0, leftViewBound - (BufferLine / 2));
+            int rightViewBound =
+                (int)(ScrollViewerVisibleArea.HorizontalOffset +
+                      (ScrollViewerVisibleArea.ViewportWidth * ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
+            rightViewBound = Math.Min(CurrentSession.PlayField.Width - 1, rightViewBound + (BufferLine / 2));
+            int upperViewBound = (int)ScrollViewerVisibleArea.VerticalOffset / mineWidth;
+            upperViewBound = Math.Max(0, upperViewBound - (BufferLine / 2));
+            int lowerViewBound =
+                (int)(ScrollViewerVisibleArea.VerticalOffset +
+                      (ScrollViewerVisibleArea.ViewportHeight * ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
+            lowerViewBound = Math.Min(CurrentSession.PlayField.Height - 1, lowerViewBound + (BufferLine / 2));
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
                 for (int j = 0; j < CurrentSession.PlayField.Height; j++)
                 {
-                    Button tile = new Button();
-                    tile.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    tile.VerticalAlignment = VerticalAlignment.Stretch;
-                    tile.HorizontalContentAlignment = HorizontalAlignment.Center;
-                    tile.VerticalContentAlignment = VerticalAlignment.Center;
-                    TextBlock text = new TextBlock();
-                    tile.Content = text;
-                    text.Text = CurrentSession.PlayField.GetTileState(i,j).NeighboringMineCount.ToString();
-                    if (text.Text == "0" || !CurrentSession.PlayField.GetTileState(i,j).IsOpen)
+                    //TODO: viewport bounds are not correct
+                    if (i >= leftViewBound && i <= rightViewBound && j >= upperViewBound && j <= lowerViewBound)
                     {
-                        text.Text = "";
-                    }
-                    
-                    if (CurrentSession.PlayField.GetTileState(i,j).IsOpen)
-                    {
-                        if (CurrentSession.PlayField.GetTileState(i,j).HasMine)
+                        Button tile;
+                        if (DrawnButtons.ContainsKey((i, j)))
                         {
-                            tile.Background = new SolidColorBrush(Color.FromArgb(120, 250 , 0, 0));
-                            ImageIcon img = new ImageIcon();
-                            img.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/Mine.png"));
-                            tile.Content = img;
+                            tile = DrawnButtons[(i, j)];
                         }
                         else
                         {
-                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 30 , 30, 30));
+                            DrawnButtons.Add((i, j), new Button()
+                            {
+                                HorizontalAlignment = HorizontalAlignment.Stretch,
+                                VerticalAlignment = VerticalAlignment.Stretch,
+                                HorizontalContentAlignment = HorizontalAlignment.Center,
+                                VerticalContentAlignment = VerticalAlignment.Center
+                            });
+                            tile = DrawnButtons[(i, j)];
+                            Grid.SetColumn(tile, i);
+                            Grid.SetRow(tile, j);
+                            ContentGrid.Children.Add(tile);
                         }
-                        
-                    }
-                    else if (CurrentSession.PlayField.GetTileState(i,j).HasFlag)
-                    {
-                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 250 , 0, 0));
-                        markedTiles += 1;
-                    }
-                    else if (CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark)
-                    {
-                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 250 , 250, 250));
-                    }
-                    else
-                    {
-                        tile.Background = new SolidColorBrush(Color.FromArgb(60, 60, 60, 60));
-                    }
 
-                    text.FontSize = 25;
-                    ContentGrid.Children.Add(tile);
-                    Grid.SetColumn(tile, i);
-                    Grid.SetRow(tile, j);
-                    if (CurrentSession.IsDummySession)
-                    {
-                        tile.Click += StartSession;
+                        if (tile.Content is not TextBlock && !CurrentSession.PlayField.GetTileState(i, j).HasFlag)
+                        {
+                            tile.Content = new TextBlock()
+                            {
+                                Text = CurrentSession.PlayField.GetTileState(i, j).NeighboringMineCount == 0
+                                    ? ""
+                                    : CurrentSession.PlayField.GetTileState(i, j).NeighboringMineCount.ToString(),
+                                FontSize = 25
+                            };
+                        }
+
+                        if (!CurrentSession.PlayField.GetTileState(i, j).IsOpen &&
+                            !CurrentSession.PlayField.GetTileState(i, j).HasFlag)
+                        {
+                            tile.Content = null;
+                        }
+
+                        //TODO: light theme
+                        if (CurrentSession.PlayField.GetTileState(i, j).IsOpen)
+                        {
+                            if (CurrentSession.PlayField.GetTileState(i, j).HasMine)
+                            {
+                                tile.Background = new SolidColorBrush(Color.FromArgb(120, 250, 0, 0));
+                                tile.Content = new Image()
+                                    { Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/Mine.png")) };
+                            }
+                            else
+                            {
+                                tile.Background = new SolidColorBrush(Color.FromArgb(60, 30, 30, 30));
+                            }
+                        }
+                        else if (CurrentSession.PlayField.GetTileState(i, j).HasFlag &&
+                                 ((tile.Background as SolidColorBrush).Color.A != 60 ||
+                                  (tile.Background as SolidColorBrush).Color.R != 250 ||
+                                  (tile.Background as SolidColorBrush).Color.G != 0 ||
+                                  (tile.Background as SolidColorBrush).Color.B != 0))
+                        {
+                            //TODO: flag symbol
+                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 250, 0, 0));
+                        }
+                        else if (CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark &&
+                                 ((tile.Background as SolidColorBrush).Color.A != 60 ||
+                                  (tile.Background as SolidColorBrush).Color.R != 250 ||
+                                  (tile.Background as SolidColorBrush).Color.G != 250 ||
+                                  (tile.Background as SolidColorBrush).Color.B != 250))
+                        {
+                            //TODO: question mark symbol
+                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 250, 250, 250));
+                        }
+                        else if (!CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark && !CurrentSession.PlayField.GetTileState(i, j).HasFlag && !CurrentSession.PlayField.GetTileState(i, j).IsOpen &&
+                        ((tile.Background as SolidColorBrush).Color.A != 60 ||
+                         (tile.Background as SolidColorBrush).Color.R != 60 ||
+                         (tile.Background as SolidColorBrush).Color.G != 60 ||
+                         (tile.Background as SolidColorBrush).Color.B != 60))
+                        {
+                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 60, 60, 60));
+                        }
+
+                        tile.Click -= StartSession;
                         tile.Click -= TileClick;
                         tile.PointerPressed -= TileMark;
+                        if (CurrentSession.IsDummySession)
+                        {
+                            tile.Click += StartSession;
+                            tile.Click -= TileClick;
+                            tile.PointerPressed -= TileMark;
+                        }
+                        else
+                        {
+                            tile.Click -= StartSession;
+                            tile.Click += TileClick;
+                            tile.PointerPressed += TileMark;
+                        }
                     }
-                    else
+
+                    if (CurrentSession.PlayField.GetTileState(i, j).HasFlag)
                     {
-                        tile.Click -= StartSession;
-                        tile.Click += TileClick;
-                        tile.PointerPressed += TileMark;
+                        markedTiles += 1;
                     }
-                    
                 }
             }
 
             TextBlockMines.Text = $"{CurrentSession.MineCount - markedTiles}/{CurrentSession.MineCount}";
         }
-        
+
         private void StartSession(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -192,30 +258,41 @@ namespace MineSweeperAuto
                 Button target = sender as Button;
                 if (reader["UsePercentage"].ToString() == "1")
                 {
-                    CurrentSession = Session.GenerateFromPercentage(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, (double)reader["MinePercentage"], reader["GuaranteeSolution"].ToString() == "1", new Point(Grid.GetColumn(target), Grid.GetRow(target)));
+                    CurrentSession = Session.GenerateFromPercentage(CurrentSession.PlayField.Width,
+                        CurrentSession.PlayField.Height, (double)reader["MinePercentage"],
+                        reader["GuaranteeSolution"].ToString() == "1",
+                        new Point(Grid.GetColumn(target), Grid.GetRow(target)));
                 }
                 else
                 {
-                    CurrentSession = Session.GenerateFromCount(CurrentSession.PlayField.Width, CurrentSession.PlayField.Height, int.Parse(reader["MineCount"].ToString()), reader["GuaranteeSolution"].ToString() == "1", new Point(Grid.GetColumn(target), Grid.GetRow(target)));
+                    CurrentSession = Session.GenerateFromCount(CurrentSession.PlayField.Width,
+                        CurrentSession.PlayField.Height, int.Parse(reader["MineCount"].ToString()),
+                        reader["GuaranteeSolution"].ToString() == "1",
+                        new Point(Grid.GetColumn(target), Grid.GetRow(target)));
                 }
+
                 UpdateView();
                 UpdateTimer = UpdateTimer_Tick(cts.Token);
             }
         }
+
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;
-            if (!CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasFlag && !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasQuestionMark)
+            if (!CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasFlag &&
+                !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasQuestionMark)
             {
                 CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
                 UpdateView();
             }
         }
+
         private void TileMark(object sender, PointerRoutedEventArgs e)
         {
             var target = sender as Button;
             var pressData = e.GetCurrentPoint(target);
-            if (pressData.Properties.IsRightButtonPressed && !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen)
+            if (pressData.Properties.IsRightButtonPressed && !CurrentSession.PlayField
+                    .GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen)
             {
                 CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), CurrentQuestionMarkPolicy);
                 UpdateView();
@@ -227,6 +304,34 @@ namespace MineSweeperAuto
             InitialiseSession();
             cts.Cancel();
             cts = new();
+        }
+
+        private Windows.Foundation.Point PreviousPosition = new(-999999, -999999);
+
+        private async void ScrollViewerVisibleArea_OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            ScrollViewerVisibleArea.PointerMoved -= ScrollViewerVisibleArea_OnPointerMoved;
+            var pointer = e.GetCurrentPoint(ScrollViewerVisibleArea);
+            if (pointer.Properties.IsMiddleButtonPressed)
+            {
+                if (PreviousPosition != new Windows.Foundation.Point(-999999, -999999))
+                {
+                    double distanceHorizontal = pointer.Position.X - PreviousPosition.X;
+                    double distanceVertical = pointer.Position.Y - PreviousPosition.Y;
+                    ScrollViewerVisibleArea.ChangeView(ScrollViewerVisibleArea.HorizontalOffset - distanceHorizontal,
+                        ScrollViewerVisibleArea.VerticalOffset - distanceVertical,
+                        ScrollViewerVisibleArea.ZoomFactor);
+                    await Task.Delay(10);
+                }
+            }
+
+            PreviousPosition = pointer.Position;
+            ScrollViewerVisibleArea.PointerMoved += ScrollViewerVisibleArea_OnPointerMoved;
+        }
+
+        private void ScrollViewerVisibleArea_OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            UpdateView();
         }
     }
 }
