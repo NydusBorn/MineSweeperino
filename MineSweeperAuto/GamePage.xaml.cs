@@ -121,20 +121,19 @@ namespace MineSweeperAuto
             {
                 await Task.Delay(50);
             }
-
             int markedTiles = 0;
-            int mineWidth = (int)((ContentGrid.RowSpacing * 2) + ContentGrid.RowDefinitions[0].Height.Value);
+            int mineWidth = (int)(ContentGrid.RowSpacing + ContentGrid.RowDefinitions[0].Height.Value);
             int leftViewBound = (int)ScrollViewerVisibleArea.HorizontalOffset / mineWidth;
             leftViewBound = Math.Max(0, leftViewBound - (BufferLine / 2));
             int rightViewBound =
                 (int)(ScrollViewerVisibleArea.HorizontalOffset +
-                      (ScrollViewerVisibleArea.ViewportWidth * ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
+                      (ScrollViewerVisibleArea.ViewportWidth / ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
             rightViewBound = Math.Min(CurrentSession.PlayField.Width - 1, rightViewBound + (BufferLine / 2));
             int upperViewBound = (int)ScrollViewerVisibleArea.VerticalOffset / mineWidth;
             upperViewBound = Math.Max(0, upperViewBound - (BufferLine / 2));
             int lowerViewBound =
                 (int)(ScrollViewerVisibleArea.VerticalOffset +
-                      (ScrollViewerVisibleArea.ViewportHeight * ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
+                      (ScrollViewerVisibleArea.ViewportHeight / ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
             lowerViewBound = Math.Min(CurrentSession.PlayField.Height - 1, lowerViewBound + (BufferLine / 2));
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {

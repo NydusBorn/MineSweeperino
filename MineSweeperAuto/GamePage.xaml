@@ -39,7 +39,7 @@
                       VerticalContentAlignment="Center" HorizontalContentAlignment="Center" 
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                       Name="ScrollViewerVisibleArea" PointerMoved="ScrollViewerVisibleArea_OnPointerMoved" ViewChanged="ScrollViewerVisibleArea_OnViewChanged"
-                      ZoomMode="Enabled">
+                      ZoomMode="Disabled">
             <Grid Name="ContentGrid" RowSpacing="10" ColumnSpacing="10" />
         </ScrollViewer>
     </Grid>
