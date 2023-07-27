@@ -60,8 +60,8 @@ public class Player
         }
         else
         {
-            //TODO: add flagging adjacent unopened tiles if the amount of unopened tiles is equal to tile's mine count
             int adjCount = _playField.GetTileState(x, y).NeighboringMineCount;
+            int closedCount = 0;
             int flagCount = 0;
             bool foundQuestion = false;
             for (int i = -1; i <= 1; i++)
@@ -78,16 +78,25 @@ public class Player
                         {
                             foundQuestion = true;
                         }
+
+                        if (!_playField.GetTileState(x + i,y + j).IsOpen)
+                        {
+                            closedCount += 1;
+                        }
                     }
                 }
             }
-
             if (flagCount == adjCount && !foundQuestion)
             {
                 if (OpenAdjacentTiles(x, y))
                 {
                     return true;
                 }
+            }
+
+            if (closedCount == adjCount)
+            {
+                FlagAdjacentTiles(x,y);
             }
         }
         return false;
@@ -122,6 +131,21 @@ public class Player
         }
 
         return false;
+    }
+
+    private void FlagAdjacentTiles(int x, int y)
+    {
+        for (int i = -1; i <= 1; i++)
+        {
+            for (int j = -1; j <= 1; j++)
+            {
+                if ((i != 0 || j != 0) && x + i >= 0 && x + i < _playField.Width && y + j >= 0 && y + j < _playField.Height && !_playField.GetTileState(x + i, y + j).IsOpen)
+                {
+                    VoidMark(x + i, y + j);
+                    CycleMark(x + i, y + j, false);
+                }
+            }
+        }
     }
 
     /// <summary>

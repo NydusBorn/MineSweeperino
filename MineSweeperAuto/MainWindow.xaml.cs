@@ -54,7 +54,7 @@ namespace MineSweeperAuto
             creator.ExecuteNonQuery();
             creator.CommandText = "CREATE TABLE GameSettings (CustomDifficulty INTEGER, FieldWidth INTEGER, FieldHeight INTEGER, UsePercentage INTEGER, MinePercentage REAL, MineCount INTEGER, GuaranteeSolution INTEGER)";
             creator.ExecuteNonQuery();
-            creator.CommandText = "insert into GameSettings values(0, 5, 5, 1, 0.1, 0, 0)";
+            creator.CommandText = "insert into GameSettings values(0, 7, 7, 0, 0.1, 5, 1)";
             creator.ExecuteNonQuery();
             
             creator.CommandText = "drop table if exists AppSettings ";

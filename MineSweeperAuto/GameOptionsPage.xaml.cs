@@ -106,15 +106,15 @@ namespace MineSweeperAuto
                     case 4:
                         TextBoxWidth.Text = "50";
                         TextBoxHeight.Text = "30";
-                        CheckBoxUsePercentage.IsChecked = false;
-                        TextBoxMines.Text = "250";
+                        CheckBoxUsePercentage.IsChecked = true;
+                        TextBoxMines.Text = "0.25";
                         CheckBoxSolutionGuaranteed.IsChecked = false;
                         break;
                     case 5:
                         TextBoxWidth.Text = "100";
                         TextBoxHeight.Text = "100";
-                        CheckBoxUsePercentage.IsChecked = false;
-                        TextBoxMines.Text = "999";
+                        CheckBoxUsePercentage.IsChecked = true;
+                        TextBoxMines.Text = "0.5";
                         CheckBoxSolutionGuaranteed.IsChecked = false;
                         break;
                     case 6:
