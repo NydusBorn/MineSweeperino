@@ -74,9 +74,11 @@ namespace MineSweeperAuto
             var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
+                DrawnButtons.Clear();
                 CurrentSession = Session.GenerateDummy(int.Parse(reader["FieldWidth"].ToString()),
                     int.Parse(reader["FieldHeight"].ToString()));
                 UpdateGridSize();
+                Task.Delay(50);
                 UpdateView();
                 MainWindow.CurrentSession = CurrentSession;
             }
@@ -84,6 +86,7 @@ namespace MineSweeperAuto
 
         private void UpdateGridSize()
         {
+            ContentGrid.Children.Clear();
             ContentGrid.RowDefinitions.Clear();
             ContentGrid.ColumnDefinitions.Clear();
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
@@ -118,7 +121,7 @@ namespace MineSweeperAuto
                 counter += 1;
                 if (counter == 100)
                 {
-                    // call update view
+                    UpdateView();
                     counter = 0;
                 }
             }
@@ -263,7 +266,7 @@ namespace MineSweeperAuto
                 }
             }
 
-            if (!unchekedTiles && markedTiles == CurrentSession.MineCount)
+            if (!unchekedTiles && markedTiles == CurrentSession.MineCount && CurrentSession.CurrentState != Session.GameState.Win)
             {
                 CurrentSession.WinGame();
                 var dialog = new ContentDialog();
