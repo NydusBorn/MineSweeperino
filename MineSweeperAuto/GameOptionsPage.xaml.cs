@@ -80,42 +80,42 @@ namespace MineSweeperAuto
                         TextBoxHeight.Text = "7";
                         CheckBoxUsePercentage.IsChecked = false;
                         TextBoxMines.Text = "5";
-                        CheckBoxSolutionGuaranteed.IsChecked = true;
+                        // CheckBoxSolutionGuaranteed.IsChecked = true;
                         break;
                     case 1:
                         TextBoxWidth.Text = "9";
                         TextBoxHeight.Text = "9";
                         CheckBoxUsePercentage.IsChecked = false;
                         TextBoxMines.Text = "10";
-                        CheckBoxSolutionGuaranteed.IsChecked = true;
+                        // CheckBoxSolutionGuaranteed.IsChecked = true;
                         break;
                     case 2:
                         TextBoxWidth.Text = "16";
                         TextBoxHeight.Text = "16";
                         CheckBoxUsePercentage.IsChecked = false;
                         TextBoxMines.Text = "40";
-                        CheckBoxSolutionGuaranteed.IsChecked = true;
+                        // CheckBoxSolutionGuaranteed.IsChecked = true;
                         break;
                     case 3:
                         TextBoxWidth.Text = "30";
                         TextBoxHeight.Text = "16";
                         CheckBoxUsePercentage.IsChecked = false;
                         TextBoxMines.Text = "99";
-                        CheckBoxSolutionGuaranteed.IsChecked = true;
+                        // CheckBoxSolutionGuaranteed.IsChecked = true;
                         break;
                     case 4:
                         TextBoxWidth.Text = "50";
                         TextBoxHeight.Text = "30";
                         CheckBoxUsePercentage.IsChecked = true;
                         TextBoxMines.Text = "0.25";
-                        CheckBoxSolutionGuaranteed.IsChecked = false;
+                        // CheckBoxSolutionGuaranteed.IsChecked = false;
                         break;
                     case 5:
                         TextBoxWidth.Text = "100";
                         TextBoxHeight.Text = "100";
                         CheckBoxUsePercentage.IsChecked = true;
                         TextBoxMines.Text = "0.5";
-                        CheckBoxSolutionGuaranteed.IsChecked = false;
+                        // CheckBoxSolutionGuaranteed.IsChecked = false;
                         break;
                     case 6:
                         TextBoxWidth.Text = reader["FieldWidth"].ToString();
@@ -129,7 +129,7 @@ namespace MineSweeperAuto
                         {
                             TextBoxMines.Text = reader["MineCount"].ToString();
                         }
-                        CheckBoxSolutionGuaranteed.IsChecked = reader["GuaranteeSolution"].ToString() == "1";
+                        // CheckBoxSolutionGuaranteed.IsChecked = reader["GuaranteeSolution"].ToString() == "1";
                         break;
                     default:
                         ComboBoxDiffChooser.SelectedIndex = 0;
@@ -142,7 +142,7 @@ namespace MineSweeperAuto
                     TextBoxHeight.IsEnabled = false;
                     TextBoxMines.IsEnabled = false;
                     CheckBoxUsePercentage.IsEnabled = false;
-                    CheckBoxSolutionGuaranteed.IsEnabled = false;
+                    // CheckBoxSolutionGuaranteed.IsEnabled = false;
                     cmd.CommandText = "update GameSettings set CustomDifficulty = 0 where true;";
                     cmd.ExecuteNonQuery();
                 }
@@ -152,7 +152,7 @@ namespace MineSweeperAuto
                     TextBoxHeight.IsEnabled = true;
                     TextBoxMines.IsEnabled = true;
                     CheckBoxUsePercentage.IsEnabled = true;
-                    CheckBoxSolutionGuaranteed.IsEnabled = true;
+                    // CheckBoxSolutionGuaranteed.IsEnabled = true;
                     cmd.CommandText = "update GameSettings set CustomDifficulty = 1 where true;";
                     cmd.ExecuteNonQuery();
                 }

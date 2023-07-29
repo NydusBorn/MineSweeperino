@@ -35,11 +35,11 @@
                         <FontIcon Glyph="&#xE7FC;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Solver Options">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xEF58;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
+                <!-- <NavigationViewItem Content="Solver Options"> -->
+                <!--     <NavigationViewItem.Icon> -->
+                <!--         <FontIcon Glyph="&#xEF58;"/> -->
+                <!--     </NavigationViewItem.Icon> -->
+                <!-- </NavigationViewItem> -->
                 <NavigationViewItem Content="Help">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE897;"/>

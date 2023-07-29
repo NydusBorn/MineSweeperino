@@ -139,7 +139,6 @@ namespace MineSweeperAuto
             {
                 for (int j = 0; j < CurrentSession.PlayField.Height; j++)
                 {
-                    //TODO: viewport bounds are not correct
                     if (i >= leftViewBound && i <= rightViewBound && j >= upperViewBound && j <= lowerViewBound)
                     {
                         Button tile;

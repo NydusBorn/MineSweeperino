@@ -41,8 +41,8 @@
             <CheckBox Name="CheckBoxUsePercentage" Content="Use Percentage" VerticalAlignment="Center" Checked="CheckBoxUsePercentage_OnChecked" Unchecked="CheckBoxUsePercentage_OnUnchecked"/>
             <TextBox Name="TextBoxMines" TextChanged="TextBoxMines_OnTextChanged"/>
         </StackPanel>
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10">
-            <CheckBox Name="CheckBoxSolutionGuaranteed" Content="Solution guaranteed" Checked="CheckBoxSolutionGuaranteed_OnChecked" Unchecked="CheckBoxSolutionGuaranteed_OnUnchecked"/>
-        </StackPanel>
+        <!-- <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10"> -->
+        <!--     <CheckBox Name="CheckBoxSolutionGuaranteed" Content="Solution guaranteed" Checked="CheckBoxSolutionGuaranteed_OnChecked" Unchecked="CheckBoxSolutionGuaranteed_OnUnchecked"/> -->
+        <!-- </StackPanel> -->
     </Grid>
 </Page>

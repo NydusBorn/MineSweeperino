@@ -17,10 +17,6 @@ public class Session
     /// </summary>
     public Player Actor;
     /// <summary>
-    /// Solver for the game
-    /// </summary>
-    public Solver AutoActor;
-    /// <summary>
     /// Amount of mines generated for the game
     /// </summary>
     public int MineCount { get; private set; }
@@ -101,7 +97,6 @@ public class Session
 
         result.MineCount = mineCount;
         result.Actor = new Player(result.PlayField);
-        result.AutoActor = new Solver(result.PlayField);
         result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
         result.CurrentState = GameState.Active;
         result.GameTimer.Start();
@@ -149,7 +144,6 @@ public class Session
 
         result.MineCount = placed;
         result.Actor = new Player(result.PlayField);
-        result.AutoActor = new Solver(result.PlayField);
         result.Actor.OpenTile(startingPoint.X, startingPoint.Y);
         result.CurrentState = GameState.Active;
         result.GameTimer.Start();
