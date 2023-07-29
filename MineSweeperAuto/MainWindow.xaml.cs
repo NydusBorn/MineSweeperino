@@ -179,6 +179,19 @@ namespace MineSweeperAuto
             {
                 ContentFrame.Navigate(typeof(HelpPage));
             }
+
+            if (CurrentSession != null)
+            {
+                if ((string)args.SelectedItem.As<NavigationViewItem>().Content == "Play" && CurrentSession.CurrentState != Session.GameState.Initialised && CurrentSession.CurrentState != Session.GameState.Win &&
+                    CurrentSession.CurrentState != Session.GameState.Loss)
+                {
+                    CurrentSession.ResumeGame();
+                }
+                else if (CurrentSession.CurrentState == Session.GameState.Active)
+                {
+                    CurrentSession.PauseGame();
+                }
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace MineSweeperAuto
 
         private void GamePage_OnLoaded(object sender, RoutedEventArgs e)
         {
-            // CurrentSession = MainWindow.CurrentSession;
+            CurrentSession = MainWindow.CurrentSession;
             var cmd = MainWindow.DBConnection.CreateCommand();
             cmd.CommandText = "SELECT UseQuestionMarks FROM AppSettings";
             var reader = cmd.ExecuteReader();
@@ -48,7 +48,19 @@ namespace MineSweeperAuto
                 CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
             }
 
-            InitialiseSession();
+            if (CurrentSession == null)
+            {
+                InitialiseSession();
+            }
+            else
+            {
+                UpdateGridSize();
+                UpdateView();
+                var timer = CurrentSession.GameTimer;
+                TextBlockTime.Text =
+                    $"{timer.Elapsed.Hours}:{timer.Elapsed.Minutes:D2}:{timer.Elapsed.Seconds:D2}:{timer.Elapsed.Milliseconds:D3}";
+            }
+            
             if (CurrentSession.CurrentState == Session.GameState.Active)
             {
                 UpdateTimer = UpdateTimer_Tick(cts.Token);
@@ -66,6 +78,7 @@ namespace MineSweeperAuto
                     int.Parse(reader["FieldHeight"].ToString()));
                 UpdateGridSize();
                 UpdateView();
+                MainWindow.CurrentSession = CurrentSession;
             }
         }
 
@@ -135,6 +148,7 @@ namespace MineSweeperAuto
                 (int)(ScrollViewerVisibleArea.VerticalOffset +
                       (ScrollViewerVisibleArea.ViewportHeight / ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
             lowerViewBound = Math.Min(CurrentSession.PlayField.Height - 1, lowerViewBound + (BufferLine / 2));
+            bool unchekedTiles = false;
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
                 for (int j = 0; j < CurrentSession.PlayField.Height; j++)
@@ -236,13 +250,32 @@ namespace MineSweeperAuto
                         }
                     }
 
-                    if (CurrentSession.PlayField.GetTileState(i, j).HasFlag)
+                    var curTile = CurrentSession.PlayField.GetTileState(i, j);
+                    if (curTile.HasFlag)
                     {
                         markedTiles += 1;
+                    }
+                    
+                    if (!curTile.IsOpen && !curTile.HasFlag)
+                    {
+                        unchekedTiles = true;
                     }
                 }
             }
 
+            if (!unchekedTiles && markedTiles == CurrentSession.MineCount)
+            {
+                CurrentSession.WinGame();
+                var dialog = new ContentDialog();
+                dialog.XamlRoot = this.XamlRoot;
+                dialog.Title = "You Win!";
+                dialog.Content = $"Congratulations! You have won in {TimeFormat(CurrentSession.GameTimer.Elapsed)}!";
+                dialog.IsPrimaryButtonEnabled = true;
+                dialog.PrimaryButtonText = "Close";
+                dialog.PrimaryButtonClick += (s, e) => s.Hide();
+                dialog.ShowAsync();
+            }
+            
             TextBlockMines.Text = $"{CurrentSession.MineCount - markedTiles}/{CurrentSession.MineCount}";
         }
 
@@ -271,16 +304,71 @@ namespace MineSweeperAuto
 
                 UpdateView();
                 UpdateTimer = UpdateTimer_Tick(cts.Token);
+                MainWindow.CurrentSession = CurrentSession;
             }
         }
 
+        private string TimeFormat(TimeSpan time)
+        {
+            string result = "";
+            if (time.Hours == 1)
+            {
+                result += $"{time.Hours} hour ";
+            }
+            else if (time.Hours > 1)
+            {
+                result += $"{time.Hours} hours ";
+            }
+
+            if (time.Minutes == 1)
+            {
+                result += $"{time.Minutes} minute ";
+            }
+            else if (time.Minutes > 1)
+            {
+                result += $"{time.Minutes} minutes ";
+            }
+            
+            if (time.Seconds == 1)
+            {
+                result += $"{time.Seconds} second ";
+            }
+            else if (time.Seconds > 1)
+            {
+                result += $"{time.Seconds} seconds ";
+            }
+            
+            if (time.Milliseconds == 1)
+            {
+                result += $"{time.Milliseconds} millisecond ";
+            }
+            else if (time.Milliseconds > 1)
+            {
+                result += $"{time.Milliseconds} milliseconds ";
+            }
+            
+            return result;
+        }
+        
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;
             if (!CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasFlag &&
-                !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasQuestionMark)
+                !CurrentSession.PlayField.GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).HasQuestionMark &&
+                CurrentSession.CurrentState == Session.GameState.Active)
             {
-                CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target));
+                if (CurrentSession.Actor.OpenTile(Grid.GetColumn(target), Grid.GetRow(target)))
+                {
+                    CurrentSession.LoseGame();
+                    var dialog = new ContentDialog();
+                    dialog.XamlRoot = this.XamlRoot;
+                    dialog.Title = "You Lost!";
+                    dialog.Content = $"Unfortunately, You have lost in {TimeFormat(CurrentSession.GameTimer.Elapsed)}!";
+                    dialog.IsPrimaryButtonEnabled = true;
+                    dialog.PrimaryButtonText = "Close";
+                    dialog.PrimaryButtonClick += (s, e) => s.Hide();
+                    dialog.ShowAsync();
+                }
                 UpdateView();
             }
         }
@@ -290,7 +378,8 @@ namespace MineSweeperAuto
             var target = sender as Button;
             var pressData = e.GetCurrentPoint(target);
             if (pressData.Properties.IsRightButtonPressed && !CurrentSession.PlayField
-                    .GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen)
+                    .GetTileState(Grid.GetColumn(target), Grid.GetRow(target)).IsOpen &&
+                CurrentSession.CurrentState == Session.GameState.Active)
             {
                 CurrentSession.Actor.CycleMark(Grid.GetColumn(target), Grid.GetRow(target), CurrentQuestionMarkPolicy);
                 UpdateView();

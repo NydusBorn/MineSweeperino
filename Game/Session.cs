@@ -198,4 +198,16 @@ public class Session
         GameTimer.Start();
         CurrentState = GameState.Active;
     }
+
+    public void LoseGame()
+    {
+        GameTimer.Stop();
+        CurrentState = GameState.Loss;
+    }
+
+    public void WinGame()
+    {
+        GameTimer.Stop();
+        CurrentState = GameState.Win;
+    }
 }
