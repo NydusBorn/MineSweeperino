@@ -27,11 +27,11 @@
                 </StackPanel>
             </Button>
             <StackPanel Grid.Column="1" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
-                <ImageIcon Source="Assets/Indicators/Clock.png" />
+                <Image Name="ImageClock" Source="Assets/Indicators/darkClock.png" />
                 <TextBlock Name="TextBlockTime" Text="h:m:s:ms" FontSize="30" />
             </StackPanel>
             <StackPanel Grid.Column="2" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" MaxHeight="50">
-                <ImageIcon Source="Assets/Indicators/Mine.png" />
+                <Image Name="ImageMine" Source="Assets/Indicators/darkMine.png" />
                 <TextBlock Name="TextBlockMines" Text="x-y/x" FontSize="30" />
             </StackPanel>
         </Grid>

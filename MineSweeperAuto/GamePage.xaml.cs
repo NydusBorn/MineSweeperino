@@ -60,7 +60,7 @@ namespace MineSweeperAuto
                 TextBlockTime.Text =
                     $"{timer.Elapsed.Hours}:{timer.Elapsed.Minutes:D2}:{timer.Elapsed.Seconds:D2}:{timer.Elapsed.Milliseconds:D3}";
             }
-            
+
             if (CurrentSession.CurrentState == Session.GameState.Active)
             {
                 UpdateTimer = UpdateTimer_Tick(cts.Token);
@@ -106,10 +106,10 @@ namespace MineSweeperAuto
             int counter = 0;
             while (true)
             {
-                if (ct.IsCancellationRequested)
-                {
-                    return;
-                }
+                // if (ct.IsCancellationRequested)
+                // {
+                //     return;
+                // }
 
                 await Task.Delay(10);
                 if (CurrentSession.CurrentState == Session.GameState.Active)
@@ -132,11 +132,11 @@ namespace MineSweeperAuto
 
         private async void UpdateView()
         {
-            //TODO: check for light theme on custom icons in the clock and mine counter
             if (ScrollViewerVisibleArea.ViewportHeight == 0)
             {
                 await Task.Delay(50);
             }
+
             int markedTiles = 0;
             int mineWidth = (int)(ContentGrid.RowSpacing + ContentGrid.RowDefinitions[0].Height.Value);
             int leftViewBound = (int)ScrollViewerVisibleArea.HorizontalOffset / mineWidth;
@@ -178,63 +178,7 @@ namespace MineSweeperAuto
                             ContentGrid.Children.Add(tile);
                         }
 
-                        if (tile.Content is not TextBlock && !CurrentSession.PlayField.GetTileState(i, j).HasFlag)
-                        {
-                            tile.Content = new TextBlock()
-                            {
-                                Text = CurrentSession.PlayField.GetTileState(i, j).NeighboringMineCount == 0
-                                    ? ""
-                                    : CurrentSession.PlayField.GetTileState(i, j).NeighboringMineCount.ToString(),
-                                FontSize = 25
-                            };
-                        }
-
-                        if (!CurrentSession.PlayField.GetTileState(i, j).IsOpen &&
-                            !CurrentSession.PlayField.GetTileState(i, j).HasFlag)
-                        {
-                            tile.Content = null;
-                        }
-
-                        //TODO: light theme
-                        if (CurrentSession.PlayField.GetTileState(i, j).IsOpen)
-                        {
-                            if (CurrentSession.PlayField.GetTileState(i, j).HasMine)
-                            {
-                                tile.Background = new SolidColorBrush(Color.FromArgb(120, 250, 0, 0));
-                                tile.Content = new Image()
-                                    { Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/Mine.png")) };
-                            }
-                            else
-                            {
-                                tile.Background = new SolidColorBrush(Color.FromArgb(60, 30, 30, 30));
-                            }
-                        }
-                        else if (CurrentSession.PlayField.GetTileState(i, j).HasFlag &&
-                                 ((tile.Background as SolidColorBrush).Color.A != 60 ||
-                                  (tile.Background as SolidColorBrush).Color.R != 250 ||
-                                  (tile.Background as SolidColorBrush).Color.G != 0 ||
-                                  (tile.Background as SolidColorBrush).Color.B != 0))
-                        {
-                            //TODO: flag symbol
-                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 250, 0, 0));
-                        }
-                        else if (CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark &&
-                                 ((tile.Background as SolidColorBrush).Color.A != 60 ||
-                                  (tile.Background as SolidColorBrush).Color.R != 250 ||
-                                  (tile.Background as SolidColorBrush).Color.G != 250 ||
-                                  (tile.Background as SolidColorBrush).Color.B != 250))
-                        {
-                            //TODO: question mark symbol
-                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 250, 250, 250));
-                        }
-                        else if (!CurrentSession.PlayField.GetTileState(i, j).HasQuestionMark && !CurrentSession.PlayField.GetTileState(i, j).HasFlag && !CurrentSession.PlayField.GetTileState(i, j).IsOpen &&
-                        ((tile.Background as SolidColorBrush).Color.A != 60 ||
-                         (tile.Background as SolidColorBrush).Color.R != 60 ||
-                         (tile.Background as SolidColorBrush).Color.G != 60 ||
-                         (tile.Background as SolidColorBrush).Color.B != 60))
-                        {
-                            tile.Background = new SolidColorBrush(Color.FromArgb(60, 60, 60, 60));
-                        }
+                        ThemeButton(tile, CurrentSession.PlayField.GetTileState(i, j));
 
                         tile.Click -= StartSession;
                         tile.Click -= TileClick;
@@ -258,7 +202,7 @@ namespace MineSweeperAuto
                     {
                         markedTiles += 1;
                     }
-                    
+
                     if (!curTile.IsOpen && !curTile.HasFlag)
                     {
                         unchekedTiles = true;
@@ -266,7 +210,8 @@ namespace MineSweeperAuto
                 }
             }
 
-            if (!unchekedTiles && markedTiles == CurrentSession.MineCount && CurrentSession.CurrentState != Session.GameState.Win)
+            if (!unchekedTiles && markedTiles == CurrentSession.MineCount &&
+                CurrentSession.CurrentState != Session.GameState.Win)
             {
                 CurrentSession.WinGame();
                 var dialog = new ContentDialog();
@@ -277,9 +222,211 @@ namespace MineSweeperAuto
                 dialog.PrimaryButtonText = "Close";
                 dialog.PrimaryButtonClick += (s, e) => s.Hide();
                 dialog.ShowAsync();
+                UpdateView();
+            }
+
+            TextBlockMines.Text = $"{CurrentSession.MineCount - markedTiles}/{CurrentSession.MineCount}";
+            
+            ThemeStaticElements();
+        }
+
+        private void ThemeStaticElements()
+        {
+            bool darkTheme = ActualTheme == ElementTheme.Dark;
+            //clock
+            if (darkTheme)
+            {
+                if (!(ImageClock.Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/darkClock.png")))
+                {
+                    ImageClock.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/darkClock.png"));
+                }
+            }
+            else
+            {
+                if (!(ImageClock.Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/lightClock.png")))
+                {
+                    ImageClock.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/lightClock.png"));
+                }
             }
             
-            TextBlockMines.Text = $"{CurrentSession.MineCount - markedTiles}/{CurrentSession.MineCount}";
+            //mine counter
+            if (darkTheme)
+            {
+                if (!(ImageMine.Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/darkMine.png")))
+                {
+                    ImageMine.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/darkMine.png"));
+                }
+            }
+            else
+            {
+                if (!(ImageMine.Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/lightMine.png")))
+                {
+                    ImageMine.Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/lightMine.png"));
+                }
+            }
+        }
+        
+        private SolidColorBrush darkThemeOpenTile = new(Color.FromArgb(60, 30, 30, 30));
+        private SolidColorBrush darkThemeFlagTile = new(Color.FromArgb(60, 250, 0, 0));
+        private SolidColorBrush darkThemeQuestionMarkTile = new(Color.FromArgb(60, 250, 250, 250));
+        private SolidColorBrush darkThemeClosedTile = new(Color.FromArgb(60, 60, 60, 60));
+        private SolidColorBrush darkThemeOpenMineTile = new(Color.FromArgb(120, 250, 0, 0));
+        private SolidColorBrush lightThemeOpenTile = new(Color.FromArgb(120, 100, 100, 100));
+        private SolidColorBrush lightThemeFlagTile = new(Color.FromArgb(60, 250, 0, 0));
+        private SolidColorBrush lightThemeQuestionMarkTile = new(Color.FromArgb(60, 250, 250, 250));
+        private SolidColorBrush lightThemeClosedTile = new(Color.FromArgb(120, 160, 160, 160));
+        private SolidColorBrush lightThemeOpenMineTile = new(Color.FromArgb(120, 250, 0, 0));
+        private void ThemeButton(Button tile, TileState state)
+        {
+            bool darkTheme = ActualTheme == ElementTheme.Dark;
+            // background determination
+            if (state.IsOpen && state.HasMine)
+            {
+                if (darkTheme)
+                {
+                    if (!tile.Background.Equals(darkThemeOpenMineTile))
+                    {
+                        tile.Background = darkThemeOpenMineTile;
+                    }
+                }
+                else
+                {
+                    if (!tile.Background.Equals(lightThemeOpenMineTile))
+                    {
+                        tile.Background = lightThemeOpenMineTile;
+                    }
+                }
+            }
+            else if (state.IsOpen && !state.HasMine)
+            {
+                if (darkTheme)
+                {
+                    if (!tile.Background.Equals(darkThemeOpenTile))
+                    {
+                        tile.Background = darkThemeOpenTile;
+                    }
+                }
+                else
+                {
+                    if (!tile.Background.Equals(lightThemeOpenTile))
+                    {
+                        tile.Background = lightThemeOpenTile;
+                    }
+                }
+            }
+            else if (state.HasFlag)
+            {
+                if (darkTheme)
+                {
+                    if (!tile.Background.Equals(darkThemeFlagTile))
+                    {
+                        tile.Background = darkThemeFlagTile;
+                    }
+                }
+                else
+                {
+                    if (!tile.Background.Equals(lightThemeFlagTile))
+                    {
+                        tile.Background = lightThemeFlagTile;
+                    }
+                }
+            }
+            else if (state.HasQuestionMark)
+            {
+                if (darkTheme)
+                {
+                    if (!tile.Background.Equals(darkThemeQuestionMarkTile))
+                    {
+                        tile.Background = darkThemeQuestionMarkTile;
+                    }
+                }
+                else
+                {
+                    if (!tile.Background.Equals(lightThemeQuestionMarkTile))
+                    {
+                        tile.Background = lightThemeQuestionMarkTile;
+                    }
+                }
+            }
+            else
+            {
+                if (darkTheme)
+                {
+                    if (!tile.Background.Equals(darkThemeClosedTile))
+                    {
+                        tile.Background = darkThemeClosedTile;
+                    }
+                }
+                else
+                {
+                    if (!tile.Background.Equals(lightThemeClosedTile))
+                    {
+                        tile.Background = lightThemeClosedTile;
+                    }
+                }
+            }
+
+            // content determination
+            if (CurrentSession.CurrentState == Session.GameState.Loss && state.HasMine)
+            {
+                if (darkTheme)
+                {
+                    if (tile.Content is not Image || !((tile.Content as Image).Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/darkMine.png")))
+                    {
+                        tile.Content = new Image(){Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/darkMine.png"))};
+                    }
+                }
+                else
+                {
+                    if (tile.Content is not Image || !((tile.Content as Image).Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/lightMine.png")))
+                    {
+                        tile.Content = new Image(){Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/lightMine.png"))};
+                    }
+                }
+            }
+            else if (!state.IsOpen && state.HasQuestionMark)
+            {
+                if (tile.Content is not TextBlock || (tile.Content as TextBlock).Text != "?")
+                {
+                    tile.Content = new TextBlock()
+                    {
+                        Text = "?",
+                        FontSize = 25
+                    };
+                }
+            }
+            else if (!state.IsOpen && state.HasFlag)
+            {
+                if (darkTheme)
+                {
+                    if (tile.Content is not Image || !((tile.Content as Image).Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/darkFlag.png")))
+                    {
+                        tile.Content = new Image(){Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/darkFlag.png"))};
+                    }
+                }
+                else
+                {
+                    if (tile.Content is not Image || !((tile.Content as Image).Source as BitmapImage).UriSource.Equals(new Uri("ms-appx:///Assets/Indicators/lightFlag.png")))
+                    {
+                        tile.Content = new Image(){Source = new BitmapImage(new Uri("ms-appx:///Assets/Indicators/lightFlag.png"))};
+                    }
+                }
+            }
+            else if (state.IsOpen && state.NeighboringMineCount > 0)
+            {
+                if (tile.Content is not TextBlock || (tile.Content as TextBlock).Text == "?")
+                {
+                    tile.Content = new TextBlock()
+                    {
+                        Text = state.NeighboringMineCount.ToString(),
+                        FontSize = 25
+                    };
+                }
+            }
+            else
+            {
+                tile.Content = null;
+            }
         }
 
         private void StartSession(object sender, RoutedEventArgs e)
@@ -331,7 +478,7 @@ namespace MineSweeperAuto
             {
                 result += $"{time.Minutes} minutes ";
             }
-            
+
             if (time.Seconds == 1)
             {
                 result += $"{time.Seconds} second ";
@@ -340,7 +487,7 @@ namespace MineSweeperAuto
             {
                 result += $"{time.Seconds} seconds ";
             }
-            
+
             if (time.Milliseconds == 1)
             {
                 result += $"{time.Milliseconds} millisecond ";
@@ -349,10 +496,10 @@ namespace MineSweeperAuto
             {
                 result += $"{time.Milliseconds} milliseconds ";
             }
-            
+
             return result;
         }
-        
+
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;
@@ -372,6 +519,7 @@ namespace MineSweeperAuto
                     dialog.PrimaryButtonClick += (s, e) => s.Hide();
                     dialog.ShowAsync();
                 }
+
                 UpdateView();
             }
         }
