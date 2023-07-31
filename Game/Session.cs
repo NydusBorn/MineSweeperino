@@ -187,24 +187,36 @@ public class Session
         return sequence;
     }
 
+    /// <summary>
+    /// Puts the session in the state of pause and stops the timer
+    /// </summary>
     public void PauseGame()
     {
         GameTimer.Stop();
         CurrentState = GameState.Paused;
     }
 
+    /// <summary>
+    /// Puts the session in active state and resumes the timer
+    /// </summary>
     public void ResumeGame()
     {
         GameTimer.Start();
         CurrentState = GameState.Active;
     }
 
+    /// <summary>
+    /// Puts the session in the state of loss and stops the timer
+    /// </summary>
     public void LoseGame()
     {
         GameTimer.Stop();
         CurrentState = GameState.Loss;
     }
 
+    /// <summary>
+    /// Puts the session in the state of win and stops the timer
+    /// </summary>
     public void WinGame()
     {
         GameTimer.Stop();

@@ -26,6 +26,9 @@ namespace MineSweeperAuto
     /// </summary>
     public sealed partial class HelpPage : Page
     {
+        /// <summary>
+        /// Polls videos 
+        /// </summary>
         Task UpdateTimer;
 
         public HelpPage()
@@ -38,6 +41,9 @@ namespace MineSweeperAuto
             UpdateTimer = UpdateTheme();
         }
 
+        /// <summary>
+        /// Loads the videos in accordance with the current theme
+        /// </summary>
         async Task UpdateTheme()
         {
             while (true)

@@ -30,8 +30,17 @@ namespace MineSweeperAuto
     /// </summary>
     public sealed partial class MainWindow : WinUIEx.WindowEx
     {
+        /// <summary>
+        /// Stored session
+        /// </summary>
         public static Session CurrentSession;
+        /// <summary>
+        /// Database that is used to store settings 
+        /// </summary>
         public static SqliteConnection DBConnection = new SqliteConnection("Data Source=MineSweeperAuto.db");
+        /// <summary>
+        /// Connects to database and ensures it has all required fields, the loads the settings
+        /// </summary>
         public MainWindow()
         {
             this.InitializeComponent();
@@ -50,6 +59,9 @@ namespace MineSweeperAuto
             
         }
 
+        /// <summary>
+        /// Creates required tables and fills the with default values
+        /// </summary>
         void CreateDB()
         {
             DBConnection.Close();
@@ -79,7 +91,10 @@ namespace MineSweeperAuto
             creator.CommandText = "insert into SolverSettings values(1000)";
             creator.ExecuteNonQuery();
         }
-        
+        /// <summary>
+        /// Checks whether the database has all required fields
+        /// </summary>
+        /// <returns></returns>
         bool EnsureDatabase()
         {
             var cmd = DBConnection.CreateCommand();
@@ -169,7 +184,11 @@ namespace MineSweeperAuto
             
             return true;
         }
-        
+        /// <summary>
+        /// Navigation and determines whether to resume the game or not
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void NavigationViewPageSelector_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)

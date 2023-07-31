@@ -30,6 +30,11 @@ namespace MineSweeperAuto
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Loading options from the database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AppOptionsPage_OnLoaded(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -42,13 +47,22 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Enable question marks and store that in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UseQuestionMarks_OnChecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
             cmd.CommandText = "update AppSettings set UseQuestionMarks = 1 where true;";
             cmd.ExecuteNonQuery();
         }
-
+        /// <summary>
+        /// Disable question marks and store that in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UseQuestionMarks_OnUnchecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -56,6 +70,11 @@ namespace MineSweeperAuto
             cmd.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Enable sound and store that in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UseSound_OnChecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -63,7 +82,11 @@ namespace MineSweeperAuto
             cmd.ExecuteNonQuery();
             ElementSoundPlayer.State = ElementSoundPlayerState.On;
         }
-
+        /// <summary>
+        /// Disable sound and store that in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UseSound_OnUnchecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();

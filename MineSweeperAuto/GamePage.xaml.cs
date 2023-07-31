@@ -27,9 +27,21 @@ namespace MineSweeperAuto
     /// </summary>
     public sealed partial class GamePage : Page
     {
+        /// <summary>
+        /// Indicates whether to use question marks
+        /// </summary>
         private bool CurrentQuestionMarkPolicy;
+        /// <summary>
+        /// Current session
+        /// </summary>
         private Session CurrentSession;
+        /// <summary>
+        /// Timer for updating the clock and indicate regular ui refresh
+        /// </summary>
         private Task UpdateTimer;
+        /// <summary>
+        /// Required for cancellation of the timer when the new one is requested 
+        /// </summary>
         private CancellationTokenSource cts = new();
 
         public GamePage()
@@ -37,6 +49,11 @@ namespace MineSweeperAuto
             this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Loads settings and determines whether to reinitialise the session
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GamePage_OnLoaded(object sender, RoutedEventArgs e)
         {
             CurrentSession = MainWindow.CurrentSession;
@@ -67,6 +84,9 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Makes a dummy session and makes it currentsession
+        /// </summary>
         private void InitialiseSession()
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -84,6 +104,9 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Sets the grid to be the same size as the playfield
+        /// </summary>
         private void UpdateGridSize()
         {
             ContentGrid.Children.Clear();
@@ -100,6 +123,10 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Updates the clock and once a second causes a ui refresh
+        /// </summary>
+        /// <param name="ct"></param>
         private async Task UpdateTimer_Tick(CancellationToken ct)
         {
             Stopwatch timer = CurrentSession.GameTimer;
@@ -127,9 +154,18 @@ namespace MineSweeperAuto
             }
         }
 
-        public const int BufferLine = 4;
+        /// <summary>
+        /// How far out of viewport to draw tiles
+        /// </summary>
+        public const int BufferLine = 2;
+        /// <summary>
+        /// Buttons that are already drawn are stored in this variable
+        /// </summary>
         private Dictionary<(int, int), Button> DrawnButtons = new();
 
+        /// <summary>
+        /// Draws mines and updates the themes when required, checks for win condition
+        /// </summary>
         private async void UpdateView()
         {
             if (ScrollViewerVisibleArea.ViewportHeight == 0)
@@ -140,17 +176,17 @@ namespace MineSweeperAuto
             int markedTiles = 0;
             int mineWidth = (int)(ContentGrid.RowSpacing + ContentGrid.RowDefinitions[0].Height.Value);
             int leftViewBound = (int)ScrollViewerVisibleArea.HorizontalOffset / mineWidth;
-            leftViewBound = Math.Max(0, leftViewBound - (BufferLine / 2));
+            leftViewBound = Math.Max(0, leftViewBound - BufferLine);
             int rightViewBound =
                 (int)(ScrollViewerVisibleArea.HorizontalOffset +
                       (ScrollViewerVisibleArea.ViewportWidth / ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
-            rightViewBound = Math.Min(CurrentSession.PlayField.Width - 1, rightViewBound + (BufferLine / 2));
+            rightViewBound = Math.Min(CurrentSession.PlayField.Width - 1, rightViewBound + BufferLine);
             int upperViewBound = (int)ScrollViewerVisibleArea.VerticalOffset / mineWidth;
-            upperViewBound = Math.Max(0, upperViewBound - (BufferLine / 2));
+            upperViewBound = Math.Max(0, upperViewBound - BufferLine);
             int lowerViewBound =
                 (int)(ScrollViewerVisibleArea.VerticalOffset +
                       (ScrollViewerVisibleArea.ViewportHeight / ScrollViewerVisibleArea.ZoomFactor)) / mineWidth;
-            lowerViewBound = Math.Min(CurrentSession.PlayField.Height - 1, lowerViewBound + (BufferLine / 2));
+            lowerViewBound = Math.Min(CurrentSession.PlayField.Height - 1, lowerViewBound + BufferLine);
             bool unchekedTiles = false;
             for (int i = 0; i < CurrentSession.PlayField.Width; i++)
             {
@@ -231,6 +267,9 @@ namespace MineSweeperAuto
             ThemeStaticElements();
         }
 
+        /// <summary>
+        /// Theming for static elements, e.g. clock, mine counter
+        /// </summary>
         private void ThemeStaticElements()
         {
             bool darkTheme = ActualTheme == ElementTheme.Dark;
@@ -266,7 +305,7 @@ namespace MineSweeperAuto
                 }
             }
         }
-        
+        // Brushes used for tiles
         private SolidColorBrush darkThemeOpenTile = new(Color.FromArgb(60, 30, 30, 30));
         private SolidColorBrush darkThemeFlagTile = new(Color.FromArgb(60, 250, 0, 0));
         private SolidColorBrush darkThemeQuestionMarkTile = new(Color.FromArgb(60, 250, 250, 250));
@@ -277,6 +316,11 @@ namespace MineSweeperAuto
         private SolidColorBrush lightThemeQuestionMarkTile = new(Color.FromArgb(60, 250, 250, 250));
         private SolidColorBrush lightThemeClosedTile = new(Color.FromArgb(120, 160, 160, 160));
         private SolidColorBrush lightThemeOpenMineTile = new(Color.FromArgb(120, 250, 0, 0));
+        /// <summary>
+        /// Sets background and content for a tile
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="state"></param>
         private void ThemeButton(Button tile, TileState state)
         {
             bool darkTheme = ActualTheme == ElementTheme.Dark;
@@ -429,7 +473,11 @@ namespace MineSweeperAuto
                 tile.Content = null;
             }
         }
-
+        /// <summary>
+        /// Begins the game at a clicked tile
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartSession(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -458,7 +506,12 @@ namespace MineSweeperAuto
                 MainWindow.CurrentSession = CurrentSession;
             }
         }
-
+        
+        /// <summary>
+        /// Gives time in more verbal form
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
         private string TimeFormat(TimeSpan time)
         {
             string result = "";
@@ -500,7 +553,11 @@ namespace MineSweeperAuto
 
             return result;
         }
-
+        /// <summary>
+        /// Open action for tile, can end the game in loss if it was a mine.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TileClick(object sender, RoutedEventArgs e)
         {
             var target = sender as Button;
@@ -526,6 +583,11 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Cycles the mark on the tile
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TileMark(object sender, PointerRoutedEventArgs e)
         {
             var target = sender as Button;
@@ -538,16 +600,27 @@ namespace MineSweeperAuto
                 UpdateView();
             }
         }
-
+        /// <summary>
+        /// Replaces the current session with an empty one 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RestartSession(object sender, RoutedEventArgs e)
         {
             InitialiseSession();
             cts.Cancel();
             cts = new();
         }
-
+        /// <summary>
+        /// Previous position of the pointer device
+        /// </summary>
         private Windows.Foundation.Point PreviousPosition = new(-999999, -999999);
 
+        /// <summary>
+        /// Allows for middle click and drag functionality
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ScrollViewerVisibleArea_OnPointerMoved(object sender, PointerRoutedEventArgs e)
         {
             ScrollViewerVisibleArea.PointerMoved -= ScrollViewerVisibleArea_OnPointerMoved;
@@ -568,7 +641,11 @@ namespace MineSweeperAuto
             PreviousPosition = pointer.Position;
             ScrollViewerVisibleArea.PointerMoved += ScrollViewerVisibleArea_OnPointerMoved;
         }
-
+        /// <summary>
+        /// When the viewport is moved we need to update the ui
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ScrollViewerVisibleArea_OnViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
         {
             UpdateView();

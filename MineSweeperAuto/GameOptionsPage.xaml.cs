@@ -24,6 +24,19 @@ namespace MineSweeperAuto
             this.InitializeComponent();
         }
 
+        // Difficulty definitions
+        //  Beginner: 7x7:5
+        //  Easy: 9x9:10
+        //  Medium: 16x16:40
+        //  Hard: 30x16:99
+        //  Expert: 50x30:0.25
+        //  Insane: 100x100:0.5
+        
+        /// <summary>
+        /// Loads the current difficulty from the database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GameOptionsPage_OnLoaded(object sender, RoutedEventArgs e)
         {
             defaultTextBackground = TextBoxWidth.Background;
@@ -66,6 +79,11 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Checks the difficulty and either sets all ui to match or allows user to control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ComboBoxDiffChooser_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -159,7 +177,11 @@ namespace MineSweeperAuto
             }
             CheckBoxUsePercentage.Content = CheckBoxUsePercentage.IsChecked.Value ? "Use Percentage" : "Use Count";
         }
-
+        /// <summary>
+        /// Checks whether the input is correct and if it is stores it in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBoxWidth_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (int.TryParse(TextBoxWidth.Text, out int width))
@@ -192,6 +214,11 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Checks whether the input is correct and if it is stores it in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBoxHeight_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (int.TryParse(TextBoxHeight.Text, out int height))
@@ -222,7 +249,11 @@ namespace MineSweeperAuto
                 flyout.ShowAt(TextBoxHeight);
             }
         }
-
+        /// <summary>
+        /// Enables mine by percentage stores it in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckBoxUsePercentage_OnChecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -241,7 +272,11 @@ namespace MineSweeperAuto
                 }
             }
         }
-
+        /// <summary>
+        /// Disables mine by percentage stores it in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckBoxUsePercentage_OnUnchecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
@@ -260,6 +295,11 @@ namespace MineSweeperAuto
             }
         }
 
+        /// <summary>
+        /// Checks whether the input is correct and if it is stores it in database
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TextBoxMines_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (CheckBoxUsePercentage.IsChecked.Value)
@@ -327,13 +367,22 @@ namespace MineSweeperAuto
             
         }
 
+        /// <summary>
+        /// Enables preliminary solving to ensure the game doesn't require guessing (currently unimplemented)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckBoxSolutionGuaranteed_OnChecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
             cmd.CommandText = "update GameSettings set GuaranteeSolution = 1 where true;";
             cmd.ExecuteNonQuery();
         }
-
+        /// <summary>
+        /// Disables preliminary solving to ensure the game doesn't require guessing (currently unimplemented)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CheckBoxSolutionGuaranteed_OnUnchecked(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
