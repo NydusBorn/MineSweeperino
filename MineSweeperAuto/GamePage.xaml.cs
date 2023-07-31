@@ -48,7 +48,7 @@ namespace MineSweeperAuto
                 CurrentQuestionMarkPolicy = (long)reader["UseQuestionMarks"] == 1;
             }
 
-            if (CurrentSession == null)
+            if (CurrentSession == null || CurrentSession.CurrentState == Session.GameState.Initialised)
             {
                 InitialiseSession();
             }
@@ -106,10 +106,10 @@ namespace MineSweeperAuto
             int counter = 0;
             while (true)
             {
-                // if (ct.IsCancellationRequested)
-                // {
-                //     return;
-                // }
+                if (ct.IsCancellationRequested)
+                {
+                    return;
+                }
 
                 await Task.Delay(10);
                 if (CurrentSession.CurrentState == Session.GameState.Active)
