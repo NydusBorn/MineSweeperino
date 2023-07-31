@@ -7,9 +7,35 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Grid>
-
-    </Grid>
+    Background="{ThemeResource SystemControlBackgroundTransparentRevealBorderBrush}"
+    Loaded="HelpPage_OnLoaded">
+    <ScrollViewer>
+        <Grid Margin="30" RowSpacing="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="In minesweeper your goal is to mark off all the mines and open all empty cells, if you open a mine, then the game is over." />
+            <Grid Grid.Row="1" ColumnSpacing="50" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <MediaPlayerElement Grid.Column="0" Name="PlayerWin" AutoPlay="False" AreTransportControlsEnabled="True" MaxWidth="600" />
+                <MediaPlayerElement Grid.Column="1" Name="PlayerLoss" AutoPlay="False" AreTransportControlsEnabled="True" MaxWidth="600"/>
+            </Grid>
+            <TextBlock Grid.Row="2" Text="You can open a cell by left clicking it." />
+            <MediaPlayerElement Grid.Row="3" Name="PlayerNormalOpen" AutoPlay="False" AreTransportControlsEnabled="True" MaxWidth="600"/>
+            <TextBlock Grid.Row="4" Text="You can mark a cell using the right mouse button, and if you click again than it is going to become a question mark (if the according setting is enabled), click again and cell will be unmarked.&#10;Which can be summarised with the next order: None -> Flag -> Question Mark (optional) -> None ..." />
+            <MediaPlayerElement Grid.Row="5" Name="PlayerMark" AutoPlay="False" AreTransportControlsEnabled="True" MaxWidth="600"/>
+            <TextBlock Grid.Row="6" TextWrapping="WrapWholeWords" Text="You can left click an open cell to do either of the 2: Mark all unopened adjacent cells if the cell number is equal to the amount of closed cells adjacent to it, or open all unmarked closed adjacent cells if the cell number matches the amount of marked adjacent cells around it." />
+            <MediaPlayerElement Grid.Row="7" Name="PlayerAdvancedOpen" AutoPlay="False" AreTransportControlsEnabled="True" MaxWidth="600"/>
+        </Grid>
+    </ScrollViewer>
 </Page>

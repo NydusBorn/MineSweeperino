@@ -33,11 +33,12 @@ namespace MineSweeperAuto
         private void AppOptionsPage_OnLoaded(object sender, RoutedEventArgs e)
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
-            cmd.CommandText = "SELECT UseQuestionMarks FROM AppSettings";
+            cmd.CommandText = "SELECT * FROM AppSettings";
             var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
                 UseQuestionMarks.IsChecked = (long)reader["UseQuestionMarks"] == 1;
+                UseSound.IsChecked = (long)reader["SoundEnabled"] == 1;
             }
         }
 
@@ -53,6 +54,22 @@ namespace MineSweeperAuto
             var cmd = MainWindow.DBConnection.CreateCommand();
             cmd.CommandText = "update AppSettings set UseQuestionMarks = 0 where true;";
             cmd.ExecuteNonQuery();
+        }
+
+        private void UseSound_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "update AppSettings set SoundEnabled = 1 where true;";
+            cmd.ExecuteNonQuery();
+            ElementSoundPlayer.State = ElementSoundPlayerState.On;
+        }
+
+        private void UseSound_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            var cmd = MainWindow.DBConnection.CreateCommand();
+            cmd.CommandText = "update AppSettings set SoundEnabled = 0 where true;";
+            cmd.ExecuteNonQuery();
+            ElementSoundPlayer.State = ElementSoundPlayerState.Off;
         }
     }
 }

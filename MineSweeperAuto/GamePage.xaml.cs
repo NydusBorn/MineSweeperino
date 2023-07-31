@@ -216,6 +216,7 @@ namespace MineSweeperAuto
                 CurrentSession.WinGame();
                 var dialog = new ContentDialog();
                 dialog.XamlRoot = this.XamlRoot;
+                dialog.RequestedTheme = ActualTheme;
                 dialog.Title = "You Win!";
                 dialog.Content = $"Congratulations! You have won in {TimeFormat(CurrentSession.GameTimer.Elapsed)}!";
                 dialog.IsPrimaryButtonEnabled = true;
@@ -512,6 +513,7 @@ namespace MineSweeperAuto
                     CurrentSession.LoseGame();
                     var dialog = new ContentDialog();
                     dialog.XamlRoot = this.XamlRoot;
+                    dialog.RequestedTheme = ActualTheme;
                     dialog.Title = "You Lost!";
                     dialog.Content = $"Unfortunately, You have lost in {TimeFormat(CurrentSession.GameTimer.Elapsed)}!";
                     dialog.IsPrimaryButtonEnabled = true;

@@ -40,6 +40,14 @@ namespace MineSweeperAuto
             DBConnection.Open();
             bool exists = EnsureDatabase();
             if (!exists) CreateDB();
+            var cmd = DBConnection.CreateCommand();
+            cmd.CommandText = "select * from AppSettings";
+            var reader = cmd.ExecuteReader();
+            if (reader.Read())
+            {
+                ElementSoundPlayer.State = (long)reader["SoundEnabled"] == 1 ? ElementSoundPlayerState.On : ElementSoundPlayerState.Off;
+            }
+            
         }
 
         void CreateDB()
@@ -59,9 +67,9 @@ namespace MineSweeperAuto
             
             creator.CommandText = "drop table if exists AppSettings ";
             creator.ExecuteNonQuery();
-            creator.CommandText = "CREATE TABLE AppSettings (UseQuestionMarks INTEGER)";
+            creator.CommandText = "CREATE TABLE AppSettings (UseQuestionMarks INTEGER, SoundEnabled INTEGER)";
             creator.ExecuteNonQuery();
-            creator.CommandText = "insert into AppSettings values(1)";
+            creator.CommandText = "insert into AppSettings values(1, 1)";
             creator.ExecuteNonQuery();
             
             creator.CommandText = "drop table if exists SolverSettings";
@@ -139,6 +147,11 @@ namespace MineSweeperAuto
             if (reader.Read())
             {
                 if (reader["name"].ToString() != "UseQuestionMarks") return false;
+            }
+            else return false;
+            if (reader.Read())
+            {
+                if (reader["name"].ToString() != "SoundEnabled") return false;
             }
             else return false;
             if (reader.Read()) return false;
