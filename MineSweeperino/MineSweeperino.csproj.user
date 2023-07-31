@@ -9,6 +9,10 @@
     <AppIconSource>C:\Users\nydus\Downloads\Game Icon.png</AppIconSource>
     <SplashScreenSource>C:\Users\nydus\Downloads\Game Icon.png</SplashScreenSource>
     <PackageLogoSource>C:\Users\nydus\Downloads\Game Icon.png</PackageLogoSource>
+    <UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
+    <AppxShowAllApps>False</AppxShowAllApps>
+    <AppxBuildConfigurationSelection>x64</AppxBuildConfigurationSelection>
+    <PackageOptionalProjectsInIdeBuilds>False</PackageOptionalProjectsInIdeBuilds>
   </PropertyGroup>
   <ItemGroup>
     <None Update="App.xaml">
