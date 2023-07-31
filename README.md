@@ -3,4 +3,4 @@
 # MineSweeperino
 Minesweeprino is a minesweeper clone written in c# and WinUI 3.
 
-![image](https://github.com/NydusBorn/MineSweeperino/assets/90088743/a1677ee6-2a01-468f-8d16-dcac4ccc18a2)
+<img src="https://github.com/NydusBorn/MineSweeperino/blob/13da8f47cdcfe7618796305b063449f4ce083321/assets/screenshot.png" alt="screenshot" />
