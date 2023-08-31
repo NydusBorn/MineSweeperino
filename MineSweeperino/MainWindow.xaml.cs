@@ -37,7 +37,7 @@ namespace MineSweeperAuto
         /// <summary>
         /// Database that is used to store settings 
         /// </summary>
-        public static SqliteConnection DBConnection = new SqliteConnection("Data Source=MineSweeperAuto.db");
+        public static SqliteConnection DBConnection = new SqliteConnection("Data Source=MineSweeperino.sqlitedb");
         /// <summary>
         /// Connects to database and ensures it has all required fields, the loads the settings
         /// </summary>
