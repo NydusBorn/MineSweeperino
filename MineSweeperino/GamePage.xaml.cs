@@ -87,7 +87,7 @@ namespace MineSweeperAuto
         /// <summary>
         /// Makes a dummy session and makes it currentsession
         /// </summary>
-        private void InitialiseSession()
+        private async void InitialiseSession()
         {
             var cmd = MainWindow.DBConnection.CreateCommand();
             cmd.CommandText = "SELECT * FROM GameSettings";
@@ -98,7 +98,7 @@ namespace MineSweeperAuto
                 CurrentSession = Session.GenerateDummy(int.Parse(reader["FieldWidth"].ToString()),
                     int.Parse(reader["FieldHeight"].ToString()));
                 UpdateGridSize();
-                Task.Delay(50);
+                await Task.Delay(50);
                 UpdateView();
                 MainWindow.CurrentSession = CurrentSession;
             }
